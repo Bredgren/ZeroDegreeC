@@ -1,18 +1,30 @@
-<!DOCTYPE HTML>
-<!-- From http://stackoverflow.com/questions/5411538/how-to-redirect-from-an-html-page -->
-<html lang="en-US">
-    <head>
-        <meta charset="UTF-8">
-        <!--<meta http-equiv="refresh" content="1;url=http://bredgren.github.io/">-->
-        <link rel="icon" type="image/ico" href="public/favicon.ico">
-        <!--<script type="text/javascript">
-            window.location.href = "http://bredgren.github.io/"
-        </script>-->
-        <title></title>
-    </head>
-    <body>
-        <!-- Note: don't tell people to `click` the link, just tell them that it is a link. -->
-        <!--If you are not redirected automatically, follow the <a href='http://bredgren.github.io/'>link</a>-->
-        Hello
-    </body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+	<head>
+		<title>Zero Degree C</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+        <link rel="icon" type="image/ico" href="favicon.ico">
+        <link rel="stylesheet" type="text/css" href="style/reset.min.css" />
+        <link rel="stylesheet" type="text/css" href="style/style.css" />
+		<script type="text/javascript" src="js/swfobject.js"></script>
+		<script type="text/javascript">
+			swfobject.registerObject("ZeroDegreeC", "11.8.0");
+		</script>
+	</head>
+	<body>
+		<div id="game">
+			<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="800" height="500" id="ZeroDegreeC">
+				<param name="movie" value="ZeroDegreeC/export/flash/bin/ZeroDegreeC.swf" />
+				<!--[if !IE]>-->
+				<object type="application/x-shockwave-flash" data="ZeroDegreeC/export/flash/bin/ZeroDegreeC.swf" width="800" height="500">
+				<!--<![endif]-->
+					<a href="http://www.adobe.com/go/getflashplayer">
+						<img src="http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" alt="Get Adobe Flash player" />
+					</a>
+				<!--[if !IE]>-->
+				</object>
+				<!--<![endif]-->
+			</object>
+		</div>
+	</body>
 </html>
