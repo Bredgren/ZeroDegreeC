@@ -36,10 +36,18 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#if flash
 		
-		className.set ("assets/data/data-goes-here.txt", __ASSET__assets_data_data_goes_here_txt);
-		type.set ("assets/data/data-goes-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
-		className.set ("assets/images/images-go-here.txt", __ASSET__assets_images_images_go_here_txt);
-		type.set ("assets/images/images-go-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
+		className.set ("assets/data/test_level.oel", __ASSET__assets_data_test_level_oel);
+		type.set ("assets/data/test_level.oel", Reflect.field (AssetType, "text".toUpperCase ()));
+		className.set ("assets/images/crate.png", __ASSET__assets_images_crate_png);
+		type.set ("assets/images/crate.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		className.set ("assets/images/stick.png", __ASSET__assets_images_stick_png);
+		type.set ("assets/images/stick.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		className.set ("assets/images/tile.png", __ASSET__assets_images_tile_png);
+		type.set ("assets/images/tile.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		className.set ("assets/images/tiles.png", __ASSET__assets_images_tiles_png);
+		type.set ("assets/images/tiles.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		className.set ("assets/images/turret.png", __ASSET__assets_images_turret_png);
+		type.set ("assets/images/turret.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		className.set ("assets/music/music-goes-here.txt", __ASSET__assets_music_music_goes_here_txt);
 		type.set ("assets/music/music-goes-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
 		className.set ("assets/sounds/sounds-go-here.txt", __ASSET__assets_sounds_sounds_go_here_txt);
@@ -52,8 +60,12 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		#elseif html5
 		
-		addExternal("assets/data/data-goes-here.txt", "text", "assets/data/data-goes-here.txt");
-		addExternal("assets/images/images-go-here.txt", "text", "assets/images/images-go-here.txt");
+		addExternal("assets/data/test_level.oel", "text", "assets/data/test_level.oel");
+		addExternal("assets/images/crate.png", "image", "assets/images/crate.png");
+		addExternal("assets/images/stick.png", "image", "assets/images/stick.png");
+		addExternal("assets/images/tile.png", "image", "assets/images/tile.png");
+		addExternal("assets/images/tiles.png", "image", "assets/images/tiles.png");
+		addExternal("assets/images/turret.png", "image", "assets/images/turret.png");
 		addExternal("assets/music/music-goes-here.txt", "text", "assets/music/music-goes-here.txt");
 		addExternal("assets/sounds/sounds-go-here.txt", "text", "assets/sounds/sounds-go-here.txt");
 		addExternal("assets/sounds/beep.mp3", "music", "assets/sounds/beep.mp3");
@@ -66,11 +78,23 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		var loadManifest = false;
 		
-		className.set ("assets/data/data-goes-here.txt", __ASSET__assets_data_data_goes_here_txt);
-		type.set ("assets/data/data-goes-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
+		className.set ("assets/data/test_level.oel", __ASSET__assets_data_test_level_oel);
+		type.set ("assets/data/test_level.oel", Reflect.field (AssetType, "text".toUpperCase ()));
 		
-		className.set ("assets/images/images-go-here.txt", __ASSET__assets_images_images_go_here_txt);
-		type.set ("assets/images/images-go-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
+		className.set ("assets/images/crate.png", __ASSET__assets_images_crate_png);
+		type.set ("assets/images/crate.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		
+		className.set ("assets/images/stick.png", __ASSET__assets_images_stick_png);
+		type.set ("assets/images/stick.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		
+		className.set ("assets/images/tile.png", __ASSET__assets_images_tile_png);
+		type.set ("assets/images/tile.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		
+		className.set ("assets/images/tiles.png", __ASSET__assets_images_tiles_png);
+		type.set ("assets/images/tiles.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		
+		className.set ("assets/images/turret.png", __ASSET__assets_images_turret_png);
+		type.set ("assets/images/turret.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		
 		className.set ("assets/music/music-goes-here.txt", __ASSET__assets_music_music_goes_here_txt);
 		type.set ("assets/music/music-goes-here.txt", Reflect.field (AssetType, "text".toUpperCase ()));
@@ -666,8 +690,12 @@ class DefaultAssetLibrary extends AssetLibrary {
 #if pixi
 #elseif flash
 
-@:keep class __ASSET__assets_data_data_goes_here_txt extends flash.utils.ByteArray { }
-@:keep class __ASSET__assets_images_images_go_here_txt extends flash.utils.ByteArray { }
+@:keep class __ASSET__assets_data_test_level_oel extends flash.utils.ByteArray { }
+@:keep class __ASSET__assets_images_crate_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep class __ASSET__assets_images_stick_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep class __ASSET__assets_images_tile_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep class __ASSET__assets_images_tiles_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep class __ASSET__assets_images_turret_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_music_music_goes_here_txt extends flash.utils.ByteArray { }
 @:keep class __ASSET__assets_sounds_sounds_go_here_txt extends flash.utils.ByteArray { }
 @:keep class __ASSET__assets_sounds_beep_mp3 extends flash.media.Sound { }
@@ -684,11 +712,19 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 
 
+
+
+
+
 #elseif (windows || mac || linux)
 
 
-@:file("assets/data/data-goes-here.txt") class __ASSET__assets_data_data_goes_here_txt extends flash.utils.ByteArray {}
-@:file("assets/images/images-go-here.txt") class __ASSET__assets_images_images_go_here_txt extends flash.utils.ByteArray {}
+@:file("assets/data/test_level.oel") class __ASSET__assets_data_test_level_oel extends flash.utils.ByteArray {}
+@:bitmap("assets/images/crate.png") class __ASSET__assets_images_crate_png extends flash.display.BitmapData {}
+@:bitmap("assets/images/stick.png") class __ASSET__assets_images_stick_png extends flash.display.BitmapData {}
+@:bitmap("assets/images/tile.png") class __ASSET__assets_images_tile_png extends flash.display.BitmapData {}
+@:bitmap("assets/images/tiles.png") class __ASSET__assets_images_tiles_png extends flash.display.BitmapData {}
+@:bitmap("assets/images/turret.png") class __ASSET__assets_images_turret_png extends flash.display.BitmapData {}
 @:file("assets/music/music-goes-here.txt") class __ASSET__assets_music_music_goes_here_txt extends flash.utils.ByteArray {}
 @:file("assets/sounds/sounds-go-here.txt") class __ASSET__assets_sounds_sounds_go_here_txt extends flash.utils.ByteArray {}
 @:sound("C:/HaxeToolkit/haxe/lib/flixel/3,3,1/assets/sounds/beep.mp3") class __ASSET__assets_sounds_beep_mp3 extends flash.media.Sound {}

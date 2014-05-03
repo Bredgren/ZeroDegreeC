@@ -15,8 +15,6 @@ class MenuState extends FlxState {
 	 * Function that is called up when to state is created to set it up.
 	 */
 	override public function create():Void {
-    var hello = new FlxText(10, 10, 0, "Hello");
-    add(hello);
 		super.create();
 	}
 
