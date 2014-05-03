@@ -9,6 +9,7 @@ private enum BodyState {
   STAND;
   WALK;
   JUMP;
+  FALL;
 }
 
 private enum ArmState {
@@ -74,37 +75,81 @@ class Player extends FlxSpriteGroup {
   }
 
   override public function update() {
-    if (FlxG.keys.anyPressed(["LEFT", "A"])) {
-      _body.velocity.x = -_max_vel;
-      _body.flipX = true;
-      _arms.flipX = true;
-      _body.animation.play("walk");
-      _arms.animation.play("walk");
+    switch (_body_state) {
+      case BodyState.STAND:
+        if (FlxG.keys.anyPressed(["UP", "W"])) {
+          _switchBodyState(BodyState.JUMP);
+        } else if (FlxG.keys.anyPressed(["LEFT", "A", "RIGHT", "D"])) {
+          _switchBodyState(BodyState.WALK);
+        } else if (!_is_on_ground) {
+          _switchBodyState(BodyState.FALL);
+        }
+      case BodyState.WALK:
+        if (FlxG.keys.anyPressed(["LEFT", "A"])) {
+          _moveLeft();
+        } else if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
+          _moveRight();
+        }
+        if (!FlxG.keys.anyPressed(["LEFT", "A", "RIGHT", "D"])) {
+          _switchBodyState(BodyState.STAND);
+        } else if (FlxG.keys.anyJustPressed(["UP", "W"])) {
+          _switchBodyState(BodyState.JUMP);
+        } else if (!_is_on_ground) {
+          _switchBodyState(BodyState.FALL);
+        }
+      case BodyState.JUMP:
+        if (FlxG.keys.anyPressed(["LEFT", "A"])) {
+          _moveLeft();
+        } else if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
+          _moveRight();
+        }
+        if (_body.velocity.y > 0) {
+          _switchBodyState(BodyState.FALL);
+        }
+        if (_is_on_ground) {
+          _switchBodyState(BodyState.STAND);
+        }
+      case BodyState.FALL:
+        if (FlxG.keys.anyPressed(["LEFT", "A"])) {
+          _moveLeft();
+        } else if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
+          _moveRight();
+        }
+        if (_is_on_ground) {
+          _switchBodyState(BodyState.STAND);
+        }
     }
-    if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
-      _body.velocity.x = _max_vel;
-      _body.flipX = false;
-      _arms.flipX = false;
-      _body.animation.play("walk");
-      _arms.animation.play("walk");
-    }
-    if (_body.velocity.x == 0) {
-      _body.animation.play("stand");
-      _arms.animation.play("stand");
-    }
-    if (_is_on_ground /*_body.velocity.y == 0*/ && FlxG.keys.anyPressed(["UP", "W"])) {
-      _body.velocity.y = -_jump_str;
-      _jumping = true;
-    }
-    // TODO: proper ground detection
-    //if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
-      //_jumping = false;
+    //if (FlxG.keys.anyPressed(["LEFT", "A"])) {
+      //_body.velocity.x = -_max_vel;
+      //_body.flipX = true;
+      //_arms.flipX = true;
+      //_body.animation.play("walk");
+      //_arms.animation.play("walk");
     //}
-
-    if (!_is_on_ground/*_body.velocity.y != 0*/) {
-      _body.animation.play("jump");
-      _arms.animation.play("jump");
-    }
+    //if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
+      //_body.velocity.x = _max_vel;
+      //_body.flipX = false;
+      //_arms.flipX = false;
+      //_body.animation.play("walk");
+      //_arms.animation.play("walk");
+    //}
+    //if (_body.velocity.x == 0) {
+      //_body.animation.play("stand");
+      //_arms.animation.play("stand");
+    //}
+    //if (_is_on_ground /*_body.velocity.y == 0*/ && FlxG.keys.anyPressed(["UP", "W"])) {
+      //_body.velocity.y = -_jump_str;
+      //_jumping = true;
+    //}
+    //// TODO: proper ground detection
+    ////if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
+      ////_jumping = false;
+    ////}
+//
+    //if (!_is_on_ground/*_body.velocity.y != 0*/) {
+      //_body.animation.play("jump");
+      //_arms.animation.play("jump");
+    //}
 
     if (FlxG.mouse.pressed) {
       var body_x = _body.getScreenXY().x + _body.width / 2;
@@ -129,10 +174,45 @@ class Player extends FlxSpriteGroup {
 
     super.update();
 
-    if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
-      _jumping = false;
-    }
+    //if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
+      //_jumping = false;
+    //}
     _arms.setPosition(_body.x, _body.y);
+  }
+
+  private function _moveLeft() {
+    _body.velocity.x = -_max_vel;
+    _body.flipX = true;
+    _arms.flipX = true;
+  }
+
+  private function _moveRight() {
+    _body.velocity.x = _max_vel;
+    _body.flipX = false;
+    _arms.flipX = false;
+  }
+
+  private function _switchBodyState(new_state:BodyState) {
+    switch (new_state) {
+      case BodyState.STAND:
+        _body.animation.play("stand");
+        _arms.animation.play("stand");
+      case BodyState.WALK:
+        _body.animation.play("walk");
+        _arms.animation.play("walk");
+      case BodyState.JUMP:
+        _body.velocity.y = -_jump_str;
+        _body.animation.play("jump");
+        _arms.animation.play("jump");
+      case BodyState.FALL:
+        _body.animation.play("jump");
+        _arms.animation.play("jump");
+    }
+    _body_state = new_state;
+  }
+
+  private function _switchArmState(new_state:ArmState) {
+
   }
 
   public function getMaxVel():Int { return _max_vel; }
