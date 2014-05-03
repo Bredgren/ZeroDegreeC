@@ -27,10 +27,22 @@ class Player extends FlxSpriteGroup {
     _body.acceleration.y = _init_gravity;
     _body.drag.x = _init_drag;
     _body.loadGraphic("assets/images/stick.png", true, 64, 128);
-    _body.animation.add("stand", [0], 3);
+    _body.animation.add("stand", [0], 0);
+    _body.animation.add("walk", [2, 3], 5);
+    _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
     add(_body);
     FlxG.log.add("add player body");
+
+    _arms = new FlxSprite(X, Y);
+    _arms.loadGraphic("assets/images/stick.png", true, 64, 128);
+    _arms.animation.add("stand", [6, 7], 2);
+    _arms.animation.add("walk", [8, 9], 5);
+    _arms.animation.add("jump", [6], 0);
+    _arms.animation.add("point", [10], 0);
+    _arms.animation.play("stand");
+    add(_arms);
+    FlxG.log.add("add player arms");
   }
 
   public function getBody():FlxSprite {
@@ -40,9 +52,21 @@ class Player extends FlxSpriteGroup {
   override public function update() {
     if (FlxG.keys.anyPressed(["LEFT", "A"])) {
       _body.velocity.x = -_max_vel;
+      _body.flipX = true;
+      _arms.flipX = true;
+      _body.animation.play("walk");
+      _arms.animation.play("walk");
     }
     if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
       _body.velocity.x = _max_vel;
+      _body.flipX = false;
+      _arms.flipX = false;
+      _body.animation.play("walk");
+      _arms.animation.play("walk");
+    }
+    if (_body.velocity.x == 0) {
+      _body.animation.play("stand");
+      _arms.animation.play("stand");
     }
     if (_body.velocity.y == 0 && FlxG.keys.anyPressed(["UP", "W"])) {
       _body.velocity.y = -_jump_str;
@@ -53,7 +77,35 @@ class Player extends FlxSpriteGroup {
       _jumping = false;
     }
 
+    if (_body.velocity.y != 0) {
+      _body.animation.play("jump");
+      _arms.animation.play("jump");
+    }
+
+    if (FlxG.mouse.pressed) {
+      var body_x = _body.getScreenXY().x + _body.width / 2;
+      var body_y = _body.getScreenXY().y + _body.height / 2;
+      var mouse_x = FlxG.mouse.getScreenPosition().x;
+      var mouse_y = FlxG.mouse.getScreenPosition().y;
+      var y = mouse_y - body_y;
+      var x = mouse_x - body_x;
+      var angle = Math.atan2(y, x);
+      if (mouse_x < body_x) {
+        _arms.flipX = true;
+        angle += Math.PI;
+      } else {
+        _arms.flipX = false;
+      }
+
+      _arms.set_angle(angle / Math.PI * 180.0);
+      _arms.animation.play("point");
+    } else {
+      _arms.set_angle(0);
+    }
+
     super.update();
+
+    _arms.setPosition(_body.x, _body.y);
   }
 
   public function getMaxVel():Int { return _max_vel; }
