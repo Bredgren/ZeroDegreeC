@@ -1,8 +1,22 @@
 package ;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+
+private enum BodyState {
+  STAND;
+  WALK;
+  JUMP;
+}
+
+private enum ArmState {
+  STAND;
+  WALK;
+  JUMP;
+  POINT;
+}
 
 /**
  * ...
@@ -14,13 +28,18 @@ class Player extends FlxSpriteGroup {
   private var _max_vel:Int = 200;
   private var _jump_str:Int = 400;
 
-  public var _body:FlxSprite;
+  private var _body:FlxSprite;
   private var _arms:FlxSprite;
+
+  private var _body_state:BodyState;
+  private var _arm_state:ArmState;
 
   private var _jumping:Bool;
 
+  private var _is_on_ground:Bool;
+
   public function new(X:Float = 0, Y:Float = 0) {
-    FlxG.log.add("create player");
+    //FlxG.log.add("create player");
     super(X, Y, 0);
 
     _body = new FlxSprite(X, Y);
@@ -31,8 +50,9 @@ class Player extends FlxSpriteGroup {
     _body.animation.add("walk", [2, 3], 5);
     _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
+    //_body.allowCollisions = FlxObject.LEFT | FlxObject.RIGHT;
     add(_body);
-    FlxG.log.add("add player body");
+    //FlxG.log.add("add player body");
 
     _arms = new FlxSprite(X, Y);
     _arms.loadGraphic("assets/images/stick.png", true, 64, 128);
@@ -41,8 +61,12 @@ class Player extends FlxSpriteGroup {
     _arms.animation.add("jump", [6], 0);
     _arms.animation.add("point", [10], 0);
     _arms.animation.play("stand");
+    //_arms.allowCollisions = FlxObject.NONE;
     add(_arms);
-    FlxG.log.add("add player arms");
+    //FlxG.log.add("add player arms");
+
+    _body_state = BodyState.STAND;
+    _arm_state = ArmState.STAND;
   }
 
   public function getBody():FlxSprite {
@@ -68,16 +92,16 @@ class Player extends FlxSpriteGroup {
       _body.animation.play("stand");
       _arms.animation.play("stand");
     }
-    if (_body.velocity.y == 0 && FlxG.keys.anyPressed(["UP", "W"])) {
+    if (_is_on_ground /*_body.velocity.y == 0*/ && FlxG.keys.anyPressed(["UP", "W"])) {
       _body.velocity.y = -_jump_str;
       _jumping = true;
     }
     // TODO: proper ground detection
-    if (_jumping && _body.velocity.y == 0) {
-      _jumping = false;
-    }
+    //if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
+      //_jumping = false;
+    //}
 
-    if (_body.velocity.y != 0) {
+    if (!_is_on_ground/*_body.velocity.y != 0*/) {
       _body.animation.play("jump");
       _arms.animation.play("jump");
     }
@@ -105,6 +129,9 @@ class Player extends FlxSpriteGroup {
 
     super.update();
 
+    if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
+      _jumping = false;
+    }
     _arms.setPosition(_body.x, _body.y);
   }
 
@@ -112,6 +139,8 @@ class Player extends FlxSpriteGroup {
   public function setMaxVel(value:Int) { _max_vel = value; }
   public function getJumpSprength():Int { return _jump_str; }
   public function setJumpStrength(value:Int) { _jump_str = value; }
+  public function isOnGround():Bool { return _is_on_ground; }
+  public function setIsOnGround(value:Bool) { _is_on_ground = value; }
 }
 /*
 package ;

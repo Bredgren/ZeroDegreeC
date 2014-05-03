@@ -29,7 +29,7 @@ class PlayState extends FlxState {
 	 */
 	override public function create():Void {
     FlxG.log.add("create");
-    FlxG.camera.bgColor = 0xffff0000;
+    FlxG.camera.bgColor = 0xFF4ABFE1;
 
     _loader = new FlxOgmoLoader("assets/data/test_level.oel");
     _tileMap = _loader.loadTilemap("assets/images/tile.png", 32, 32, "tiles");
@@ -40,7 +40,9 @@ class PlayState extends FlxState {
     add(_player);
     FlxG.log.add("add player");
 
-    FlxG.camera.follow(_player.getBody(), FlxCamera.STYLE_LOCKON, null, 0);
+    FlxG.camera.follow(_player.getBody(), FlxCamera.STYLE_PLATFORMER, null, 5);
+    //FlxG.camera.followLead.x = 10;
+    //FlxG.camera.followLead.y = 10;
     //FlxG.camera.setBounds(0, 0, _map.width, _map.height);
     //FlxG.camera.setBounds( -1000, -1000, 2000, 2000);
 
@@ -61,6 +63,10 @@ class PlayState extends FlxState {
 	override public function update():Void {
 		super.update();
 
-    FlxG.collide(_tileMap, _player);
+    if (FlxG.collide(_tileMap, _player)) {
+      _player.setIsOnGround(_player.getBody().isTouching(FlxObject.DOWN));
+    } else {
+      _player.setIsOnGround(false);
+    }
 	}
 }
