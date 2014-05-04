@@ -14,7 +14,7 @@ class Crate extends FlxSprite {
 
     this.loadGraphic("assets/images/crate.png");
     this.acceleration.y = 500;
-    this.drag.x = 500;
+    this.drag.set(200, 200);
     this.elasticity = 0.2;
   }
 }

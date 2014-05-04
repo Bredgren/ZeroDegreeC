@@ -116,6 +116,7 @@ class Player extends FlxSpriteGroup {
       _is_grabbing = false;
       _setArmsAnimation();
       _grabbed_crate.acceleration.y = 500; // TODO
+      _grabbed_crate.allowCollisions = FlxObject.ANY;
       var throw_factor = 2.0;
       _grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
       _grabbed_crate = null;
@@ -219,10 +220,12 @@ class Player extends FlxSpriteGroup {
 
   public function touchCrate(crate:Crate, player:FlxObject) {
     FlxG.log.add(_body.touching);
+    if (_grabbed_crate != null) return;
     if (_is_grabbing &&
         ((_body.isTouching(FlxObject.LEFT) && _arms.flipX) ||
         (_body.isTouching(FlxObject.RIGHT) && !_arms.flipX))) {
         crate.acceleration.y = 0;
+        crate.allowCollisions = FlxObject.NONE;
         _grabbed_crate = crate;
     } else {
       _grabbed_crate = null;

@@ -36,9 +36,14 @@ class PlayState extends FlxState {
     _tileMap = _loader.loadTilemap("assets/images/tile.png", 32, 32, "tiles");
     add(_tileMap);
     FlxG.log.add("add tile map");
+    FlxG.log.add(_tileMap.width + " " + _tileMap.height);
+
+    _crates = new FlxGroup();
+    add(_crates);
 
     _loader.loadEntities(_loadEntity, "objects");
 
+    //_spawnPlayer(80, 400);
     //_player = new Player(100, 100);
     //add(_player);
     //FlxG.log.add("add player");
@@ -52,14 +57,16 @@ class PlayState extends FlxState {
     //_crate = new Crate(300, 300);
     //add(_crate);
 
-    _crates = new FlxGroup();
-    add(_crates);
-    for (i in 0...10) {
-      var crate = new FlxSprite(100 + 40 * i, 100);
-      FlxG.log.add(crate);
-      crate.loadGraphic("assets/images/crate.png");
-      _crates.add(crate);
-    }
+    //_crates = new FlxGroup();
+    //add(_crates);
+    //for (i in 0...10) {
+      //var crate = new Crate(100 + 40 * i, 800);
+      //FlxG.log.add(crate);
+      //crate.loadGraphic("assets/images/crate.png");
+      ////add(crate);
+      //_crates.add(crate);
+      //FlxG.log.add(_crates.length);
+    //}
 
 		super.create();
 	}
@@ -80,6 +87,7 @@ class PlayState extends FlxState {
 
     FlxG.collide(_crates, _player, _player.touchCrate);
     FlxG.collide(_tileMap, _crates);
+    FlxG.collide(_crates, _crates);
 
     if (FlxG.collide(_tileMap, _player)) {
       _player.setIsOnGround(_player.getBody().isTouching(FlxObject.DOWN));
@@ -90,10 +98,9 @@ class PlayState extends FlxState {
 
   private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
-    if (_player != null) {
-      _player.destroy();
-    }
-    _player = new Player(x, y);
+    _player = new Player(0, 0);
+    _player.x = x - _player.width / 2;
+    _player.y = y - _player.height;
     add(_player);
 
     FlxG.camera.follow(_player.getBody(), FlxCamera.STYLE_PLATFORMER, null, 5);
@@ -101,19 +108,21 @@ class PlayState extends FlxState {
 
   private function _spawnCrate(x:Float, y:Float) {
     FlxG.log.add("spawn crate " + x + " " + y);
-    //var crate = new Crate(x, y);
-    //FlxG.log.add("a");
-    //_crates.add(crate);
-    //FlxG.log.add("b");
+    var crate = new Crate(0, 0);
+    crate.x = x - crate.width / 2;
+    crate.y = y - crate.height;
+    _crates.add(crate);
   }
 
   private function _loadEntity(entity:String, params:Xml):Void {
     FlxG.log.add(entity + ": " + params);
+    var x = Std.parseFloat(params.get("x"));
+    var y = Std.parseFloat(params.get("y"));
     switch (entity) {
       case "Player":
-        _spawnPlayer(Std.parseFloat(params.get("x")), Std.parseFloat(params.get("y")));
+        _spawnPlayer(x, y);
       case "Crate":
-        _spawnCrate(Std.parseFloat(params.get("x")), Std.parseFloat(params.get("y")));
+        _spawnCrate(x, y);
     }
   }
 }

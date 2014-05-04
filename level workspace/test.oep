@@ -68,8 +68,8 @@
         <Height>64</Height>
       </Size>
       <Origin>
-        <X>0</X>
-        <Y>0</Y>
+        <X>17</X>
+        <Y>64</Y>
       </Origin>
       <ImageDefinition DrawMode="Image" ImagePath="..\art workspace\stick_icon.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
@@ -83,8 +83,8 @@
         <Height>32</Height>
       </Size>
       <Origin>
-        <X>0</X>
-        <Y>0</Y>
+        <X>16</X>
+        <Y>32</Y>
       </Origin>
       <ImageDefinition DrawMode="Image" ImagePath="..\art workspace\crate.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
