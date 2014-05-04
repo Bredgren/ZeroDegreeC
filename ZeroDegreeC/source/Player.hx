@@ -12,13 +12,6 @@ private enum BodyState {
   FALL;
 }
 
-private enum ArmState {
-  STAND;
-  WALK;
-  JUMP;
-  POINT;
-}
-
 /**
  * ...
  * @author Brandon
@@ -33,11 +26,11 @@ class Player extends FlxSpriteGroup {
   private var _arms:FlxSprite;
 
   private var _body_state:BodyState;
-  private var _arm_state:ArmState;
-
-  private var _jumping:Bool;
 
   private var _is_on_ground:Bool;
+  private var _is_grabbing:Bool;
+
+  private var _grabbed_crate:Crate;
 
   public function new(X:Float = 0, Y:Float = 0) {
     //FlxG.log.add("create player");
@@ -67,7 +60,6 @@ class Player extends FlxSpriteGroup {
     //FlxG.log.add("add player arms");
 
     _body_state = BodyState.STAND;
-    _arm_state = ArmState.STAND;
   }
 
   public function getBody():FlxSprite {
@@ -119,39 +111,27 @@ class Player extends FlxSpriteGroup {
           _switchBodyState(BodyState.STAND);
         }
     }
-    //if (FlxG.keys.anyPressed(["LEFT", "A"])) {
-      //_body.velocity.x = -_max_vel;
-      //_body.flipX = true;
-      //_arms.flipX = true;
-      //_body.animation.play("walk");
-      //_arms.animation.play("walk");
-    //}
-    //if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
-      //_body.velocity.x = _max_vel;
-      //_body.flipX = false;
-      //_arms.flipX = false;
-      //_body.animation.play("walk");
-      //_arms.animation.play("walk");
-    //}
-    //if (_body.velocity.x == 0) {
-      //_body.animation.play("stand");
-      //_arms.animation.play("stand");
-    //}
-    //if (_is_on_ground /*_body.velocity.y == 0*/ && FlxG.keys.anyPressed(["UP", "W"])) {
-      //_body.velocity.y = -_jump_str;
-      //_jumping = true;
-    //}
-    //// TODO: proper ground detection
-    ////if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
-      ////_jumping = false;
-    ////}
-//
-    //if (!_is_on_ground/*_body.velocity.y != 0*/) {
-      //_body.animation.play("jump");
-      //_arms.animation.play("jump");
-    //}
 
-    if (FlxG.mouse.pressed) {
+    if (FlxG.keys.justReleased.SPACE) {
+      _is_grabbing = false;
+      _setArmsAnimation();
+      _grabbed_crate.acceleration.y = 500; // TODO
+      var throw_factor = 2.0;
+      _grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
+      _grabbed_crate = null;
+    }
+
+    if (FlxG.keys.pressed.SPACE) {
+      _is_grabbing = true;
+      if (FlxG.mouse.getScreenPosition().x < _body.getScreenXY().x + _body.width / 2) {
+        _body.flipX = true;
+        _arms.flipX = true;
+      } else {
+        _body.flipX = false;
+        _arms.flipX = false;
+      }
+      _arms.animation.play("point");
+    } else if (FlxG.mouse.pressed) {
       var body_x = _body.getScreenXY().x + _body.width / 2;
       var body_y = _body.getScreenXY().y + _body.height / 2;
       var mouse_x = FlxG.mouse.getScreenPosition().x;
@@ -160,9 +140,11 @@ class Player extends FlxSpriteGroup {
       var x = mouse_x - body_x;
       var angle = Math.atan2(y, x);
       if (mouse_x < body_x) {
+        _body.flipX = true;
         _arms.flipX = true;
         angle += Math.PI;
       } else {
+        _body.flipX = false;
         _arms.flipX = false;
       }
 
@@ -170,14 +152,21 @@ class Player extends FlxSpriteGroup {
       _arms.animation.play("point");
     } else {
       _arms.set_angle(0);
+      _setArmsAnimation();
     }
 
     super.update();
 
-    //if (_jumping && _is_on_ground /*_body.velocity.y == 0*/) {
-      //_jumping = false;
-    //}
     _arms.setPosition(_body.x, _body.y);
+
+    if (_grabbed_crate != null) {
+      var offset_x = _body.width - _grabbed_crate.width;
+      if (_arms.flipX) {
+        offset_x = 0.0;
+      }
+      _grabbed_crate.x = _body.x + offset_x;
+      _grabbed_crate.y = _body.y + _body.height / 3;
+    }
   }
 
   private function _moveLeft() {
@@ -196,23 +185,29 @@ class Player extends FlxSpriteGroup {
     switch (new_state) {
       case BodyState.STAND:
         _body.animation.play("stand");
-        _arms.animation.play("stand");
       case BodyState.WALK:
         _body.animation.play("walk");
-        _arms.animation.play("walk");
       case BodyState.JUMP:
         _body.velocity.y = -_jump_str;
         _body.animation.play("jump");
-        _arms.animation.play("jump");
       case BodyState.FALL:
         _body.animation.play("jump");
-        _arms.animation.play("jump");
     }
     _body_state = new_state;
+    _setArmsAnimation();
   }
 
-  private function _switchArmState(new_state:ArmState) {
-
+  private function _setArmsAnimation() {
+    switch (_body_state) {
+      case BodyState.STAND:
+        _arms.animation.play("stand");
+      case BodyState.WALK:
+        _arms.animation.play("walk");
+      case BodyState.JUMP:
+        _arms.animation.play("jump");
+      case BodyState.FALL:
+        _arms.animation.play("jump");
+    }
   }
 
   public function getMaxVel():Int { return _max_vel; }
@@ -221,54 +216,16 @@ class Player extends FlxSpriteGroup {
   public function setJumpStrength(value:Int) { _jump_str = value; }
   public function isOnGround():Bool { return _is_on_ground; }
   public function setIsOnGround(value:Bool) { _is_on_ground = value; }
-}
-/*
-package ;
 
-import flixel.FlxSprite;
-import flixel.FlxG;
-import flixel.FlxObject;
-
-class Player extends FlxSprite {
-  private var _jumping:Bool;
-
-  public function new(X:Float=0, Y:Float=0, ?SimpleGraphic:Dynamic) {
-    super(X, Y, SimpleGraphic);
-    this.loadGraphic("assets/images/player.png", true, 25, 34);
-
-    this.x = 40;
-    this.y = 40;
-    this.acceleration.y = 500;
-    this.drag.x = 400;
-
-    this.animation.add("default", [0, 1], 3);
-    this.animation.add("jump", [2]);
-    this.animation.play("default");
-    _jumping = true;
-  }
-
-  override public function  update() {
-    if (FlxG.keys.pressed.LEFT) {
-      this.velocity.x = -150;
-      this.flipX = true;
+  public function touchCrate(crate:Crate, player:FlxObject) {
+    FlxG.log.add(_body.touching);
+    if (_is_grabbing &&
+        ((_body.isTouching(FlxObject.LEFT) && _arms.flipX) ||
+        (_body.isTouching(FlxObject.RIGHT) && !_arms.flipX))) {
+        crate.acceleration.y = 0;
+        _grabbed_crate = crate;
+    } else {
+      _grabbed_crate = null;
     }
-    if (FlxG.keys.pressed.RIGHT) {
-      this.velocity.x = 150;
-      this.flipX = false;
-    }
-    trace(this.velocity);
-    if (this.velocity.y == 0 && FlxG.keys.pressed.UP) {
-      this.velocity.y = -250;
-      this.animation.play("jump");
-      _jumping = true;
-    }
-
-    if (_jumping && this.velocity.y == 0) {
-      _jumping = false;
-      this.animation.play("default");
-    }
-
-    super.update();
   }
 }
-*/
