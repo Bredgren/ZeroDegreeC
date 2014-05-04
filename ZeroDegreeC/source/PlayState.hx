@@ -39,9 +39,10 @@ class PlayState extends FlxState {
     FlxG.log.add(_tileMap.width + " " + _tileMap.height);
 
     _crates = new FlxGroup();
-    add(_crates);
 
     _loader.loadEntities(_loadEntity, "objects");
+
+    add(_crates);
 
     //_spawnPlayer(80, 400);
     //_player = new Player(100, 100);
@@ -85,11 +86,19 @@ class PlayState extends FlxState {
 	override public function update():Void {
 		super.update();
 
-    FlxG.collide(_crates, _player, _player.touchCrate);
-    FlxG.collide(_tileMap, _crates);
+    var player_collide = false;
+    if (FlxG.collide(_crates, _player, _player.touchCrate)) {
+      player_collide = true;
+    }
+
     FlxG.collide(_crates, _crates);
+    FlxG.collide(_tileMap, _crates);
 
     if (FlxG.collide(_tileMap, _player)) {
+      player_collide = true;
+    }
+
+    if (player_collide) {
       _player.setIsOnGround(_player.getBody().isTouching(FlxObject.DOWN));
     } else {
       _player.setIsOnGround(false);

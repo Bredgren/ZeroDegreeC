@@ -115,7 +115,7 @@ class Player extends FlxSpriteGroup {
     if (FlxG.keys.justReleased.SPACE) {
       _is_grabbing = false;
       _setArmsAnimation();
-      _grabbed_crate.acceleration.y = 500; // TODO
+      _grabbed_crate.acceleration.y = 500; // TODO this doesn't belong here
       _grabbed_crate.allowCollisions = FlxObject.ANY;
       var throw_factor = 2.0;
       _grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
