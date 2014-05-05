@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import flixel.util.FlxPoint;
 import Freezable;
 
 private enum BodyState {
@@ -37,6 +38,9 @@ class Player extends FlxSpriteGroup {
 
   private var _state:GameState;
 
+  private var _ray:Ray;
+  //private var _sight_ray:Ray;
+
   public function new(X:Float = 0, Y:Float = 0, freeze_power:Int, state:GameState) {
     //FlxG.log.add("create player");
     super(X, Y, 0);
@@ -67,6 +71,13 @@ class Player extends FlxSpriteGroup {
     //FlxG.log.add("add player arms");
 
     _body_state = BodyState.STAND;
+
+    _ray = new Ray(0xFF3FC0B4);
+    add(_ray);
+
+    //_sight_ray = new Ray(0x553EC155);
+    //_sight_ray.setThickness(1);
+    //add(_sight_ray);
   }
 
   public function getBody():FlxSprite {
@@ -131,6 +142,14 @@ class Player extends FlxSpriteGroup {
       _grabbed_crate = null;
     }
 
+    //var b_x = _body.x + _body.width / 2;
+    //var b_y = _body.y + _body.height / 2;
+    //var m_x = FlxG.mouse.getWorldPosition().x;
+    //var m_y = FlxG.mouse.getWorldPosition().y;
+    //var e = new FlxPoint();
+    //_state.fireRay(b_x, b_y, m_x, m_y, e);
+    //_sight_ray.fire(new FlxPoint(b_x, b_y), e, 0.001);
+
     if (FlxG.keys.pressed.SPACE) {
       _is_grabbing = true;
       _is_grabbing = true;
@@ -160,9 +179,10 @@ class Player extends FlxSpriteGroup {
       body_y = _body.y + _body.height / 2;
       mouse_x = FlxG.mouse.getWorldPosition().x;
       mouse_y = FlxG.mouse.getWorldPosition().y;
-      var obj = _state.fireRay(body_x, body_y, mouse_x - body_x, mouse_y - body_y);
+      var end_point = new FlxPoint();
+      var obj = _state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point);
+      _ray.fire(new FlxPoint(body_x, body_y), end_point, 0.08);
       if (obj != null) {
-        FlxG.log.add("hit " + obj);
         var c = cast(obj, Crate);
         if (FlxG.mouse.justPressed) {
           if (c.freeze()) {
@@ -173,8 +193,6 @@ class Player extends FlxSpriteGroup {
             _freeze_power++;
           }
         }
-      } else {
-        FlxG.log.add("miss");
       }
     } else {
       _arms.set_angle(0);
