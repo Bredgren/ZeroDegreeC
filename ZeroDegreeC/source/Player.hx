@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxSpriteGroup;
+import Freezable;
 
 private enum BodyState {
   STAND;
@@ -115,22 +116,21 @@ class Player extends FlxSpriteGroup {
     if (FlxG.keys.justReleased.SPACE) {
       _is_grabbing = false;
       _setArmsAnimation();
-      _grabbed_crate.acceleration.y = 500; // TODO this doesn't belong here
-      _grabbed_crate.allowCollisions = FlxObject.ANY;
-      var throw_factor = 2.0;
-      _grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
+      var throw_factor = 1.2;
+      _grabbed_crate.letGo(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
+      // TODO this doesn't belong here
+      //if (_grabbed_crate.freezeLevel() != FREEZE_LEVEL.TWO) {
+        //_grabbed_crate.acceleration.y = 500;
+      //}
+      //_grabbed_crate.allowCollisions = FlxObject.ANY;
+      //
+      //_grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
       _grabbed_crate = null;
     }
 
     if (FlxG.keys.pressed.SPACE) {
       _is_grabbing = true;
-      if (FlxG.mouse.getScreenPosition().x < _body.getScreenXY().x + _body.width / 2) {
-        _body.flipX = true;
-        _arms.flipX = true;
-      } else {
-        _body.flipX = false;
-        _arms.flipX = false;
-      }
+      _arms.flipX = _body.flipX;
       _arms.animation.play("point");
     } else if (FlxG.mouse.pressed) {
       var body_x = _body.getScreenXY().x + _body.width / 2;
@@ -167,6 +167,17 @@ class Player extends FlxSpriteGroup {
       }
       _grabbed_crate.x = _body.x + offset_x;
       _grabbed_crate.y = _body.y + _body.height / 3;
+    }
+
+    if (FlxG.keys.justPressed.Q) {
+      if (_grabbed_crate != null) {
+        _grabbed_crate.freeze();
+      }
+    }
+    if (FlxG.keys.justPressed.E) {
+      if (_grabbed_crate != null) {
+        _grabbed_crate.unfreeze();
+      }
     }
   }
 
@@ -219,14 +230,14 @@ class Player extends FlxSpriteGroup {
   public function setIsOnGround(value:Bool) { _is_on_ground = value; }
 
   public function touchCrate(crate:Crate, player:FlxObject) {
-    FlxG.log.add(_body.touching);
+    //FlxG.log.add(_body.touching);
     if (_grabbed_crate != null) return;
     if (_is_grabbing &&
         ((_body.isTouching(FlxObject.LEFT) && _arms.flipX) ||
         (_body.isTouching(FlxObject.RIGHT) && !_arms.flipX))) {
-        crate.acceleration.y = 0;
-        crate.allowCollisions = FlxObject.NONE;
-        _grabbed_crate = crate;
+        if (crate.grab()) {
+          _grabbed_crate = crate;
+        }
     } else {
       _grabbed_crate = null;
     }
