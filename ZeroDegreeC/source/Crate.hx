@@ -11,6 +11,7 @@ import Freezable;
  */
 class Crate extends Freezable {
   private var _init_gravity:Int = 500;
+  private var _grabbed:Bool = false;
 
   public function new(X:Float = 0, Y:Float = 0) {
     super(X, Y);
@@ -30,6 +31,7 @@ class Crate extends Freezable {
     }
     this.acceleration.y = 0;
     this.allowCollisions = FlxObject.NONE;
+    _grabbed = true;
     return true;
   }
 
@@ -39,6 +41,7 @@ class Crate extends Freezable {
       this.velocity.set(throw_x,throw_y);
     }
     this.allowCollisions = FlxObject.ANY;
+    _grabbed = false;
   }
 
   override public function update():Void {
@@ -47,21 +50,28 @@ class Crate extends Freezable {
 
   override public function onZero():Void {
     FlxG.log.add("zero");
+    this.color = 0xFFFFFFFF;
   }
 
   override public function onOneFromZero():Void {
-    FlxG.log.add("one from zero");
+    FlxG.log.add("one from zero " + this.color);
+    this.color = 0xFF92EFEB;
   }
 
   override public function onOneFromTwo():Void {
     FlxG.log.add("one from two");
     this.immovable = false;
-    this.acceleration.y = _init_gravity;
+    if (!_grabbed) {
+      this.acceleration.y = _init_gravity;
+    }
+    this.color = 0xFF92EFEB;
   }
 
   override public function onTwo():Void {
     FlxG.log.add("two");
     this.immovable = true;
-    this.acceleration.y = 0;
+    this.acceleration.set(0, 0);
+    this.velocity.set(0, 0);
+    this.color = 0xFF0380FC;
   }
 }

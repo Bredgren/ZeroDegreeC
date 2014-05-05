@@ -17,20 +17,16 @@ import openfl.Assets;
 /**
  * A FlxState which can be used for the actual gameplay.
  */
-class PlayState extends FlxState {
+class PlayState extends GameState {
   private var _loader:FlxOgmoLoader;
-  private var _tileMap:FlxTilemap;
   private var _map:FlxTilemap;
-
-  private var _player:Player;
-  private var _crates:FlxGroup;
 
 	/**
 	 * Function that is called up when to state is created to set it up.
 	 */
 	override public function create():Void {
     FlxG.log.add("create");
-    FlxG.camera.bgColor = 0xFF4ABFE1;
+    FlxG.camera.bgColor = 0xFFC0C0C0;
 
     _loader = new FlxOgmoLoader("assets/data/test_level.oel");
     _tileMap = _loader.loadTilemap("assets/images/tile.png", 32, 32, "tiles");
@@ -43,31 +39,6 @@ class PlayState extends FlxState {
     _loader.loadEntities(_loadEntity, "objects");
 
     add(_crates);
-
-    //_spawnPlayer(80, 400);
-    //_player = new Player(100, 100);
-    //add(_player);
-    //FlxG.log.add("add player");
-
-    //FlxG.camera.follow(_player.getBody(), FlxCamera.STYLE_PLATFORMER, null, 5);
-    //FlxG.camera.followLead.x = 10;
-    //FlxG.camera.followLead.y = 10;
-    //FlxG.camera.setBounds(0, 0, _map.width, _map.height);
-    //FlxG.camera.setBounds( -1000, -1000, 2000, 2000);
-
-    //_crate = new Crate(300, 300);
-    //add(_crate);
-
-    //_crates = new FlxGroup();
-    //add(_crates);
-    //for (i in 0...10) {
-      //var crate = new Crate(100 + 40 * i, 800);
-      //FlxG.log.add(crate);
-      //crate.loadGraphic("assets/images/crate.png");
-      ////add(crate);
-      //_crates.add(crate);
-      //FlxG.log.add(_crates.length);
-    //}
 
 		super.create();
 	}
@@ -107,7 +78,7 @@ class PlayState extends FlxState {
 
   private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
-    _player = new Player(0, 0);
+    _player = new Player(0, 0, 10, this);
     _player.x = x - _player.width / 2;
     _player.y = y - _player.height;
     add(_player);

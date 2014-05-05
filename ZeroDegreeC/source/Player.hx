@@ -1,5 +1,6 @@
 package ;
 
+import flixel.addons.tile.FlxRayCastTilemap;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
@@ -22,6 +23,7 @@ class Player extends FlxSpriteGroup {
   private var _init_drag:Int = 400;
   private var _max_vel:Int = 200;
   private var _jump_str:Int = 400;
+  private var _freeze_power:Int = 0;
 
   private var _body:FlxSprite;
   private var _arms:FlxSprite;
@@ -33,9 +35,13 @@ class Player extends FlxSpriteGroup {
 
   private var _grabbed_crate:Crate;
 
-  public function new(X:Float = 0, Y:Float = 0) {
+  private var _state:GameState;
+
+  public function new(X:Float = 0, Y:Float = 0, freeze_power:Int, state:GameState) {
     //FlxG.log.add("create player");
     super(X, Y, 0);
+    _state = state;
+    _freeze_power = freeze_power;
 
     _body = new FlxSprite(X, Y);
     _body.acceleration.y = _init_gravity;
@@ -65,6 +71,10 @@ class Player extends FlxSpriteGroup {
 
   public function getBody():FlxSprite {
     return _body;
+  }
+
+  public function getFreezePower():Int {
+    return _freeze_power;
   }
 
   override public function update() {
@@ -118,21 +128,15 @@ class Player extends FlxSpriteGroup {
       _setArmsAnimation();
       var throw_factor = 1.2;
       _grabbed_crate.letGo(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
-      // TODO this doesn't belong here
-      //if (_grabbed_crate.freezeLevel() != FREEZE_LEVEL.TWO) {
-        //_grabbed_crate.acceleration.y = 500;
-      //}
-      //_grabbed_crate.allowCollisions = FlxObject.ANY;
-      //
-      //_grabbed_crate.velocity.set(_body.velocity.x * throw_factor, _body.velocity.y * throw_factor);
       _grabbed_crate = null;
     }
 
     if (FlxG.keys.pressed.SPACE) {
       _is_grabbing = true;
+      _is_grabbing = true;
       _arms.flipX = _body.flipX;
       _arms.animation.play("point");
-    } else if (FlxG.mouse.pressed) {
+    } else if ((_freeze_power > 0 && FlxG.mouse.justPressed) || FlxG.mouse.justPressedRight) {
       var body_x = _body.getScreenXY().x + _body.width / 2;
       var body_y = _body.getScreenXY().y + _body.height / 2;
       var mouse_x = FlxG.mouse.getScreenPosition().x;
@@ -151,6 +155,27 @@ class Player extends FlxSpriteGroup {
 
       _arms.set_angle(angle / Math.PI * 180.0);
       _arms.animation.play("point");
+
+      body_x = _body.x + _body.width / 2;
+      body_y = _body.y + _body.height / 2;
+      mouse_x = FlxG.mouse.getWorldPosition().x;
+      mouse_y = FlxG.mouse.getWorldPosition().y;
+      var obj = _state.fireRay(body_x, body_y, mouse_x - body_x, mouse_y - body_y);
+      if (obj != null) {
+        FlxG.log.add("hit " + obj);
+        var c = cast(obj, Crate);
+        if (FlxG.mouse.justPressed) {
+          if (c.freeze()) {
+            _freeze_power--;
+          }
+        } else {
+          if (c.unfreeze()) {
+            _freeze_power++;
+          }
+        }
+      } else {
+        FlxG.log.add("miss");
+      }
     } else {
       _arms.set_angle(0);
       _setArmsAnimation();
