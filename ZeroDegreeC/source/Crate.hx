@@ -26,7 +26,7 @@ class Crate extends Freezable {
    * @return false if it can't be grabbed
    */
   public function grab():Bool {
-    if (_freeze_level == FREEZE_LEVEL.TWO) {
+    if (_freeze_level == FreezeLevel.TWO) {
       return false;
     }
     this.acceleration.y = 0;
@@ -36,7 +36,7 @@ class Crate extends Freezable {
   }
 
   public function letGo(throw_x:Float, throw_y:Float):Void {
-    if (_freeze_level != FREEZE_LEVEL.TWO) {
+    if (_freeze_level != FreezeLevel.TWO) {
       this.acceleration.y = _init_gravity;
       this.velocity.set(throw_x,throw_y);
     }
@@ -49,17 +49,17 @@ class Crate extends Freezable {
   }
 
   override public function onZero():Void {
-    FlxG.log.add("zero");
+    FlxG.log.add("crate zero");
     this.color = 0xFFFFFFFF;
   }
 
   override public function onOneFromZero():Void {
-    FlxG.log.add("one from zero " + this.color);
+    FlxG.log.add("crate one from zero " + this.color);
     this.color = 0xFF92EFEB;
   }
 
   override public function onOneFromTwo():Void {
-    FlxG.log.add("one from two");
+    FlxG.log.add("crate one from two");
     this.immovable = false;
     if (!_grabbed) {
       this.acceleration.y = _init_gravity;
@@ -68,7 +68,7 @@ class Crate extends Freezable {
   }
 
   override public function onTwo():Void {
-    FlxG.log.add("two");
+    FlxG.log.add("crate two");
     this.immovable = true;
     this.acceleration.set(0, 0);
     this.velocity.set(0, 0);

@@ -41,5 +41,7 @@
     <Crate id="3" x="464" y="960" />
     <Crate id="4" x="448" y="928" />
     <Player id="0" x="112" y="960" />
+    <Turret id="6" x="656" y="784" />
+    <Turret id="7" x="1456" y="656" />
   </objects>
 </level>

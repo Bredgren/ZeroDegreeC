@@ -5,21 +5,23 @@ import flixel.FlxSprite;
  * @author Brandon
  */
 
-enum FREEZE_LEVEL {
+enum FreezeLevel {
   ZERO;
   ONE;
   TWO;
 }
 
 class Freezable extends FlxSprite {
-  private var _freeze_level:FREEZE_LEVEL;
+  private var _freeze_level:FreezeLevel;
 
-  public function new(X:Float = 0, Y:Float = 0) {
-    super(X, Y);
-    _freeze_level = FREEZE_LEVEL.ZERO;
+  public function new(X:Float=0, Y:Float=0) {
+    super(0, 0);
+    this.x = X;
+    this.y = Y;
+    _freeze_level = FreezeLevel.ZERO;
   }
 
-  public function freezeLevel():FREEZE_LEVEL {
+  public function freezeLevel():FreezeLevel {
     return _freeze_level;
   }
 
@@ -30,15 +32,15 @@ class Freezable extends FlxSprite {
 	 */
   public function freeze():Bool {
     switch (_freeze_level) {
-      case FREEZE_LEVEL.ZERO:
-        _freeze_level = FREEZE_LEVEL.ONE;
+      case FreezeLevel.ZERO:
+        _freeze_level = FreezeLevel.ONE;
         onOneFromZero();
         return true;
-      case FREEZE_LEVEL.ONE:
-        _freeze_level = FREEZE_LEVEL.TWO;
+      case FreezeLevel.ONE:
+        _freeze_level = FreezeLevel.TWO;
         onTwo();
         return true;
-      case FREEZE_LEVEL.TWO:
+      case FreezeLevel.TWO:
         return false;
     }
   }
@@ -50,14 +52,14 @@ class Freezable extends FlxSprite {
 	 */
   public function unfreeze():Bool {
     switch (_freeze_level) {
-      case FREEZE_LEVEL.ZERO:
+      case FreezeLevel.ZERO:
         return false;
-      case FREEZE_LEVEL.ONE:
-        _freeze_level = FREEZE_LEVEL.ZERO;
+      case FreezeLevel.ONE:
+        _freeze_level = FreezeLevel.ZERO;
         onZero();
         return true;
-      case FREEZE_LEVEL.TWO:
-        _freeze_level = FREEZE_LEVEL.ONE;
+      case FreezeLevel.TWO:
+        _freeze_level = FreezeLevel.ONE;
         onOneFromTwo();
         return true;
     }

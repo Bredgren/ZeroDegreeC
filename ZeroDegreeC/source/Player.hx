@@ -183,13 +183,12 @@ class Player extends FlxSpriteGroup {
       var obj = _state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point);
       _ray.fire(new FlxPoint(body_x, body_y), end_point, 0.08);
       if (obj != null) {
-        var c = cast(obj, Crate);
         if (FlxG.mouse.justPressed) {
-          if (c.freeze()) {
+          if (obj.freeze()) {
             _freeze_power--;
           }
         } else {
-          if (c.unfreeze()) {
+          if (obj.unfreeze()) {
             _freeze_power++;
           }
         }
