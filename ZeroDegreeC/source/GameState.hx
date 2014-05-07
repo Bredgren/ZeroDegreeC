@@ -115,7 +115,7 @@ class GameState extends FlxState {
 
   private function _spawnTurret(x:Float, y:Float) {
     FlxG.log.add("spawn turret " + x + " " + y);
-    var turret = new Turret(0, 0);
+    var turret = new Turret(0, 0, this);
     turret.x = x - turret.width / 2;
     turret.y = y - turret.height / 2;
     _turrets.add(turret);
@@ -136,7 +136,7 @@ class GameState extends FlxState {
   }
 
   public function fireRay(source_x:Float, source_y:Float, end_x:Float, end_y:Float,
-                          result:FlxPoint, collide_with:EnumFlags<RayCollision>):Freezable {
+                          result:FlxPoint, collide_with:EnumFlags<RayCollision>):FlxObject {
     var dir_x = end_x - source_x;
     var dir_y = end_y - source_y;
     var max_length = Math.sqrt(dir_x * dir_x + dir_y * dir_y);
@@ -144,11 +144,15 @@ class GameState extends FlxState {
     dir_y /= max_length;
     var step = 10.0;
     var current_length = 1.0;
-    var hit_object:Freezable = null;
+    var hit_object:FlxObject = null;
     while (current_length < max_length) {
       var new_x = source_x + dir_x * current_length;
       var new_y = source_y + dir_y * current_length;
       var p = new FlxPoint(new_x, new_y);
+      if (collide_with.has(RayCollision.PLAYER)) {
+        hit_object = getPlayerAt(p);
+        if (hit_object != null) break;
+      }
       if (collide_with.has(RayCollision.ICE_BLOCKS)) {
         hit_object = getIceBlockAt(p);
         if (hit_object != null) break;
@@ -164,24 +168,27 @@ class GameState extends FlxState {
       current_length += step;
     }
 
-    var tile_point:FlxPoint = new FlxPoint();
     var end_point = new FlxPoint(source_x + dir_x * max_length, source_y + dir_y * max_length);
-    var hit = _tileMap.ray(new FlxPoint(source_x, source_y), end_point, tile_point, 3);
     var hit_point = new FlxPoint(source_x + dir_x * current_length, source_y + dir_y * current_length);
-    if (!hit) {
-      if (hit_object == null) {
-        hit_point = tile_point;
-      } else {
-        var dx = tile_point.x - source_x;
-        var dy = tile_point.y - source_y;
-        var tile_dist = Math.sqrt(dx * dx + dy *  dy);
-        if (tile_dist < current_length) {
+
+    if (collide_with.has(RayCollision.MAP)) {
+      var tile_point:FlxPoint = new FlxPoint();
+      var hit = _tileMap.ray(new FlxPoint(source_x, source_y), end_point, tile_point, 3);
+      if (!hit) {
+        if (hit_object == null) {
           hit_point = tile_point;
-          hit_object = null;
+        } else {
+          var dx = tile_point.x - source_x;
+          var dy = tile_point.y - source_y;
+          var tile_dist = Math.sqrt(dx * dx + dy *  dy);
+          if (tile_dist < current_length) {
+            hit_point = tile_point;
+            hit_object = null;
+          }
         }
+      } else if (hit_object == null) {
+        hit_point = end_point;
       }
-    } else if (hit_object == null) {
-      hit_point = end_point;
     }
 
     result.set(hit_point.x, hit_point.y);

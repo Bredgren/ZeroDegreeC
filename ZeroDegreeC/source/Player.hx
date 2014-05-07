@@ -57,6 +57,9 @@ class Player extends FlxSpriteGroup {
     _body.animation.add("walk", [2, 3], 5);
     _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
+    _body.width = 32;
+    _body.height = 128;
+    _body.centerOffsets();
     //_body.allowCollisions = FlxObject.LEFT | FlxObject.RIGHT;
     add(_body);
     //FlxG.log.add("add player body");
@@ -68,7 +71,10 @@ class Player extends FlxSpriteGroup {
     _arms.animation.add("jump", [6], 0);
     _arms.animation.add("point", [10], 0);
     _arms.animation.play("stand");
-    //_arms.allowCollisions = FlxObject.NONE;
+    _arms.width = 32;
+    _arms.height = 128;
+    _arms.centerOffsets();
+    _arms.allowCollisions = FlxObject.NONE;
     add(_arms);
     //FlxG.log.add("add player arms");
 
@@ -187,7 +193,7 @@ class Player extends FlxSpriteGroup {
       flags.set(RayCollision.TURRETS);
       flags.set(RayCollision.ICE_BLOCKS);
       flags.set(RayCollision.MAP);
-      var obj = _state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point, flags);
+      var obj = cast(_state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point, flags), Freezable);
       _ray.fire(new FlxPoint(body_x, body_y), end_point, 0.08);
       if (obj != null) {
         var ice_blocks = _state.getIceBlocks();
@@ -217,9 +223,9 @@ class Player extends FlxSpriteGroup {
     _arms.setPosition(_body.x, _body.y);
 
     if (_grabbed_crate != null) {
-      var offset_x = _body.width - _grabbed_crate.width;
+      var offset_x = -_body.width / 2 + _grabbed_crate.width;
       if (_arms.flipX) {
-        offset_x = 0.0;
+        offset_x = -offset_x;
       }
       _grabbed_crate.x = _body.x + offset_x;
       _grabbed_crate.y = _body.y + _body.height / 3;

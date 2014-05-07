@@ -15,8 +15,8 @@ class Ray extends FlxSprite {
   private var _color:Int;
   private var _thickness:Int = 5;
 
-  public function new(color:Int, ?SimpleGraphic:Dynamic) {
-    super(0, 0, SimpleGraphic);
+  public function new(color:Int) {
+    super(0, 0);
     _color = color;
     this.kill();
   }
@@ -37,6 +37,7 @@ class Ray extends FlxSprite {
     var width = Std.int(Math.max(Math.abs(end.x - start.x), _thickness) + _thickness / 2);
     var height = Std.int(Math.max(Math.abs(end.y - start.y), _thickness) + _thickness / 2);
     this.makeGraphic(width, height, 0x00000000);
+    FlxSpriteUtil.fill(this, 0x00000000);
     var s:LineStyle = { color: _color, thickness: _thickness };
     var x1 = _thickness / 2;
     var y1 = _thickness / 2;
@@ -50,6 +51,7 @@ class Ray extends FlxSprite {
       y1 = height - _thickness / 2;
       y2 = _thickness / 2;
     }
+    FlxG.log.add("ray " + x1 + ", " + y1 + " | " + x2 + ", " + y2);
     FlxSpriteUtil.drawLine(this, x1, y1, x2, y2, s);
 
     this.alpha = 1.0;
