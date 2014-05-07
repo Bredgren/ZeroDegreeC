@@ -50,12 +50,12 @@ class Crate extends Freezable {
 
   override public function onZero():Void {
     FlxG.log.add("crate zero");
-    this.color = 0xFFFFFFFF;
+    //this.color = 0xFFFFFFFF;
   }
 
   override public function onOneFromZero():Void {
     FlxG.log.add("crate one from zero " + this.color);
-    this.color = 0xFF92EFEB;
+    //this.color = 0xFF92EFEB;
   }
 
   override public function onOneFromTwo():Void {
@@ -64,7 +64,7 @@ class Crate extends Freezable {
     if (!_grabbed) {
       this.acceleration.y = _init_gravity;
     }
-    this.color = 0xFF92EFEB;
+    //this.color = 0xFF92EFEB;
   }
 
   override public function onTwo():Void {
@@ -72,6 +72,6 @@ class Crate extends Freezable {
     this.immovable = true;
     this.acceleration.set(0, 0);
     this.velocity.set(0, 0);
-    this.color = 0xFF0380FC;
+    //this.color = 0xFF0380FC;
   }
 }

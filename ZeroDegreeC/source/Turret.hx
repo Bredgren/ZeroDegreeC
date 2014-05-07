@@ -24,17 +24,21 @@ class Turret extends Freezable {
 
   public function new(X:Float=0, Y:Float=0) {
     super(X, Y);
-		this.loadGraphic("assets/images/turret.png", true, 48, 48);
-    this.animation.add("Zero", [0]);
-    this.animation.add("One", [1]);
-    this.animation.add("Two", [2]);
-    this.animation.play("Zero");
+		this.loadGraphic("assets/images/turret.png");
+    //this.animation.add("Zero", [0]);
+    //this.animation.add("One", [1]);
+    //this.animation.add("Two", [2]);
+    //this.animation.play("Zero");
     this.immovable = true;
 
     _min_angle = -90;
     _max_angle = 90;
     _original_speed = _speed = 2;
     _dir = 1;
+
+    this.width = 25;
+    this.height = 25;
+    this.centerOffsets();
   }
 
   override public function update():Void {
@@ -58,28 +62,29 @@ class Turret extends Freezable {
 
   override public function onZero():Void {
     FlxG.log.add("turret zero");
-    this.animation.play("Zero");
-    this.color = 0xFFFFFFFF;
+    //this.animation.play("Zero");
+    //this.color = 0xFFFFFFFF;
+    _speed = _original_speed;
   }
 
   override public function onOneFromZero():Void {
     FlxG.log.add("turret one from zero");
-    this.animation.play("One");
-    this.color = 0xFF92EFEB;
+    //this.animation.play("One");
+    //this.color = 0xFFEE0000;
     _speed = _original_speed / 2;
   }
 
   override public function onOneFromTwo():Void {
     FlxG.log.add("turret one from two");
-    this.animation.play("One");
-    this.color = 0xFF92EFEB;
+    //this.animation.play("One");
+    //this.color = 0xFF92EFEB;
     _speed = _original_speed / 2;
   }
 
   override public function onTwo():Void {
     FlxG.log.add("turret two");
-    this.animation.play("Two");
-    this.color = 0xFF0380FC;
+    //this.animation.play("Two");
+    //this.color = 0xFF0380FC;
     _speed = 0;
   }
 }

@@ -1,17 +1,27 @@
 package ;
 
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
-import flixel.group.FlxGroup;
+import flixel.group.FlxTypedGroup;
 import flixel.text.FlxText;
 import flixel.tile.FlxTilemap;
 import flixel.util.FlxCollision;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSpriteUtil;
+import haxe.EnumFlags;
+
+enum RayCollision {
+  MAP;
+  PLAYER;
+  ICE_BLOCKS;
+  CRATES;
+  TURRETS;
+}
 
 /**
  * ...
@@ -22,10 +32,12 @@ class GameState extends FlxState {
   private var _map:FlxTilemap;
   private var _tileMap:FlxTilemap;
 
+  private var _ice_blocks:FlxTypedGroup<IceBlock>;
   private var _player:Player;
-  private var _crates:FlxGroup;
-  private var _turrets:FlxGroup;
+  private var _crates:FlxTypedGroup<Crate>;
+  private var _turrets:FlxTypedGroup<Turret>;
 
+  private var _max_freeze_power:Int;
   private var _freeze_power:FlxText;
 
   public function new() {
@@ -37,8 +49,8 @@ class GameState extends FlxState {
     FlxG.log.add("add tile map");
     FlxG.log.add(_tileMap.width + " " + _tileMap.height);
 
-    _crates = new FlxGroup();
-    _turrets = new FlxGroup();
+    _crates = new FlxTypedGroup<Crate>();
+    _turrets = new FlxTypedGroup<Turret>();
     _loader.loadEntities(_loadEntity, "objects");
     add(_crates);
     add(_turrets);
@@ -48,6 +60,9 @@ class GameState extends FlxState {
     _freeze_power.scrollFactor.set(0, 0);
     _freeze_power.color = 0x0530FA;
     add(_freeze_power);
+
+    _ice_blocks = new FlxTypedGroup<IceBlock>();
+    add(_ice_blocks);
 
     super.create();
   }
@@ -76,9 +91,13 @@ class GameState extends FlxState {
     }
   }
 
+  public function getIceBlocks():FlxTypedGroup<IceBlock> {
+    return _ice_blocks;
+  }
+
    private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
-    _player = new Player(0, 0, 10, this);
+    _player = new Player(0, 0, _max_freeze_power, this);
     _player.x = x - _player.width / 2;
     _player.y = y - _player.height;
     add(_player);
@@ -116,7 +135,8 @@ class GameState extends FlxState {
     }
   }
 
-  public function fireRay(source_x:Float, source_y:Float, end_x:Float, end_y:Float, result:FlxPoint):Freezable {
+  public function fireRay(source_x:Float, source_y:Float, end_x:Float, end_y:Float,
+                          result:FlxPoint, collide_with:EnumFlags<RayCollision>):Freezable {
     var dir_x = end_x - source_x;
     var dir_y = end_y - source_y;
     var max_length = Math.sqrt(dir_x * dir_x + dir_y * dir_y);
@@ -129,22 +149,17 @@ class GameState extends FlxState {
       var new_x = source_x + dir_x * current_length;
       var new_y = source_y + dir_y * current_length;
       var p = new FlxPoint(new_x, new_y);
-      for (crate in _crates) {
-        var o = cast(crate, Freezable);
-        if (o.overlapsPoint(p)) {
-          hit_object = o;
-          break;
-        }
+      if (collide_with.has(RayCollision.ICE_BLOCKS)) {
+        hit_object = getIceBlockAt(p);
+        if (hit_object != null) break;
       }
-      for (turret in _turrets) {
-        var o = cast(turret, Freezable);
-        if (o.overlapsPoint(p)) {
-          hit_object = o;
-          break;
-        }
+      if (collide_with.has(RayCollision.CRATES)) {
+        hit_object = getCrateAt(p);
+        if (hit_object != null) break;
       }
-      if (hit_object != null) {
-        break;
+      if (collide_with.has(RayCollision.TURRETS)) {
+        hit_object = getTurretAt(p);
+        if (hit_object != null) break;
       }
       current_length += step;
     }
@@ -173,4 +188,31 @@ class GameState extends FlxState {
     return hit_object;
   }
 
+  public function getPlayerAt(point:FlxPoint):Player {
+    if (_player.overlapsPoint(point)) {
+      return _player;
+    }
+    return null;
+  }
+
+  public function getIceBlockAt(point:FlxPoint):IceBlock {
+    return cast(_getObjectAt(point, _ice_blocks), IceBlock);
+  }
+
+  public function getCrateAt(point:FlxPoint):Crate {
+    return cast(_getObjectAt(point, _crates), Crate);
+  }
+
+  public function getTurretAt(point:FlxPoint):Turret {
+    return cast(_getObjectAt(point, _turrets), Turret);
+  }
+
+  private function _getObjectAt<T:FlxObject>(point:FlxPoint, group:FlxTypedGroup<T>):T {
+    for (obj in group) {
+      if (obj.alive && obj.overlapsPoint(point)) {
+        return obj;
+      }
+    }
+    return null;
+  }
 }
