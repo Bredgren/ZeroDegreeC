@@ -22,6 +22,9 @@ private enum BodyState {
  * @author Brandon
  */
 class Player extends FlxSpriteGroup {
+  private var _health:Float = 0;
+  private var _dmg_speed:Float = 0.05;
+  private var _rev_speed:Float = 0.002;
   private var _init_gravity:Int = 500;
   private var _init_drag:Int = 400;
   private var _max_vel:Int = 200;
@@ -97,11 +100,20 @@ class Player extends FlxSpriteGroup {
     return _freeze_power;
   }
 
+  public function getHealth():Float {
+    return _health;
+  }
+
   public function hit():Void {
-    FlxG.log.add("hit player");
+    _health = Math.min(1, _health + _dmg_speed);
+    FlxG.camera.shake(0.01, 0.1);
+    if (_health == 1) {
+      _state.onPlayerDeath();
+    }
   }
 
   override public function update() {
+    _health = Math.max(0, _health - _rev_speed);
     switch (_body_state) {
       case BodyState.STAND:
         if (FlxG.keys.anyPressed(["UP", "W"])) {

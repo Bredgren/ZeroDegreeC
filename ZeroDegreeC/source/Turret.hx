@@ -61,8 +61,12 @@ class Turret extends Freezable {
     _weapon.bounds.left = 0;
     _weapon.bounds.right = _game_state.levelWidth();
     _weapon.bounds.bottom = _game_state.levelHeight();
-    _weapon.setBulletSpeed(5000);
-    _weapon.setFireRate(500);
+    _weapon.setBulletSpeed(2500);
+    _weapon.setBulletRandomFactor(5);
+    _weapon.setFireRate(50);
+    _weapon.onFireCallback = function():Void {
+      FlxG.camera.shake(0.005, 0.05);
+    };
     _game_state.add(_weapon.group);
   }
 

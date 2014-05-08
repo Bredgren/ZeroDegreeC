@@ -42,6 +42,8 @@ class GameState extends FlxState {
   private var _max_freeze_power:Int;
   private var _freeze_power:FlxText;
 
+  private var _dmg_indicator:FlxSprite;
+
   public function new() {
     super();
   }
@@ -66,6 +68,12 @@ class GameState extends FlxState {
     _ice_blocks = new FlxTypedGroup<IceBlock>();
     add(_ice_blocks);
 
+    _dmg_indicator = new FlxSprite();
+    _dmg_indicator.makeGraphic(Std.int(FlxG.game.width), Std.int(FlxG.game.height), 0x99FF0000);
+    _dmg_indicator.alpha = 0;
+    _dmg_indicator.scrollFactor.set(0, 0);
+    add(_dmg_indicator);
+
     super.create();
   }
 
@@ -79,6 +87,8 @@ class GameState extends FlxState {
 
   override public function update():Void {
     super.update();
+
+    _dmg_indicator.alpha = _player.getHealth();
 
     _freeze_power.text = "Freeze Power: " + _player.getFreezePower();
 
@@ -238,6 +248,10 @@ class GameState extends FlxState {
     return cast(_getObjectAt(point, _turrets), Turret);
   }
 
+  public function onPlayerDeath() {
+    FlxG.switchState(new PlayState());
+  }
+
   private function _getObjectAt<T:FlxObject>(point:FlxPoint, group:FlxTypedGroup<T>):T {
     for (obj in group) {
       if (obj.alive && obj.overlapsPoint(point)) {
@@ -246,4 +260,16 @@ class GameState extends FlxState {
     }
     return null;
   }
+
+  override public function destroy():Void {
+    FlxG.log.add("destroy");
+    _tileMap.destroy();
+    _player.destroy();
+    _turrets.destroy();
+    _crates.destroy();
+    _ice_blocks.destroy();
+    _freeze_power.destroy();
+    _dmg_indicator.destroy();
+		super.destroy();
+	}
 }
