@@ -1,6 +1,8 @@
 package ;
 
 import flixel.addons.editors.ogmo.FlxOgmoLoader;
+import flixel.addons.weapon.FlxBullet;
+import flixel.addons.weapon.FlxWeapon;
 import flixel.FlxBasic;
 import flixel.FlxCamera;
 import flixel.FlxG;
@@ -29,7 +31,7 @@ enum RayCollision {
  */
 class GameState extends FlxState {
   private var _loader:FlxOgmoLoader;
-  private var _map:FlxTilemap;
+  //private var _map:FlxTilemap;
   private var _tileMap:FlxTilemap;
 
   private var _ice_blocks:FlxTypedGroup<IceBlock>;
@@ -52,8 +54,8 @@ class GameState extends FlxState {
     _crates = new FlxTypedGroup<Crate>();
     _turrets = new FlxTypedGroup<Turret>();
     _loader.loadEntities(_loadEntity, "objects");
-    add(_crates);
     add(_turrets);
+    add(_crates);
 
     _freeze_power = new FlxText(10, 20, 200, "Freeze Power: ??");
     _freeze_power.setPosition(10, 10);
@@ -65,6 +67,14 @@ class GameState extends FlxState {
     add(_ice_blocks);
 
     super.create();
+  }
+
+  public function levelWidth():Float {
+    return _tileMap.width;
+  }
+
+  public function levelHeight():Float {
+    return _tileMap.height;
   }
 
   override public function update():Void {
@@ -88,6 +98,20 @@ class GameState extends FlxState {
       _player.setIsOnGround(_player.getBody().isTouching(FlxObject.DOWN));
     } else {
       _player.setIsOnGround(false);
+    }
+
+    for (turret in _turrets) {
+      var bullets = turret.weapon().group;
+      FlxG.collide(_tileMap, bullets, function(obj1:FlxObject, obj2:FlxObject) {
+        obj2.kill();
+      });
+      FlxG.overlap(_crates, bullets, function(obj1:FlxObject, obj2:FlxObject) {
+        obj2.kill();
+      });
+      FlxG.overlap(bullets, _player.getBody(), function(obj1:FlxBullet, obj2:FlxSprite) {
+        _player.hit();
+        obj1.kill();
+      });
     }
   }
 
@@ -115,7 +139,7 @@ class GameState extends FlxState {
 
   private function _spawnTurret(x:Float, y:Float) {
     FlxG.log.add("spawn turret " + x + " " + y);
-    var turret = new Turret(0, 0, this);
+    var turret = new Turret(x, y, this);
     turret.x = x - turret.width / 2;
     turret.y = y - turret.height / 2;
     _turrets.add(turret);
@@ -196,7 +220,7 @@ class GameState extends FlxState {
   }
 
   public function getPlayerAt(point:FlxPoint):Player {
-    if (_player.overlapsPoint(point)) {
+    if (_player.getBody().overlapsPoint(point)) {
       return _player;
     }
     return null;

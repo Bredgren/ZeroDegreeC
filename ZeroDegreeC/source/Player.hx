@@ -58,7 +58,7 @@ class Player extends FlxSpriteGroup {
     _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
     _body.width = 32;
-    _body.height = 128;
+    _body.height = 125;
     _body.centerOffsets();
     //_body.allowCollisions = FlxObject.LEFT | FlxObject.RIGHT;
     add(_body);
@@ -72,7 +72,7 @@ class Player extends FlxSpriteGroup {
     _arms.animation.add("point", [10], 0);
     _arms.animation.play("stand");
     _arms.width = 32;
-    _arms.height = 128;
+    _arms.height = 125;
     _arms.centerOffsets();
     _arms.allowCollisions = FlxObject.NONE;
     add(_arms);
@@ -95,6 +95,10 @@ class Player extends FlxSpriteGroup {
 
   public function getFreezePower():Int {
     return _freeze_power;
+  }
+
+  public function hit():Void {
+    FlxG.log.add("hit player");
   }
 
   override public function update() {

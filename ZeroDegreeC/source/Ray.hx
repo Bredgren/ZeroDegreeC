@@ -51,7 +51,7 @@ class Ray extends FlxSprite {
       y1 = height - _thickness / 2;
       y2 = _thickness / 2;
     }
-    FlxG.log.add("ray " + x1 + ", " + y1 + " | " + x2 + ", " + y2);
+
     FlxSpriteUtil.drawLine(this, x1, y1, x2, y2, s);
 
     this.alpha = 1.0;
