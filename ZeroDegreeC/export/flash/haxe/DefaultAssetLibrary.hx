@@ -44,6 +44,8 @@ class DefaultAssetLibrary extends AssetLibrary {
 		type.set ("assets/images/ice_block.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		className.set ("assets/images/stick.png", __ASSET__assets_images_stick_png);
 		type.set ("assets/images/stick.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		className.set ("assets/images/stick_small.png", __ASSET__assets_images_stick_small_png);
+		type.set ("assets/images/stick_small.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		className.set ("assets/images/tile.png", __ASSET__assets_images_tile_png);
 		type.set ("assets/images/tile.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		className.set ("assets/images/tiles.png", __ASSET__assets_images_tiles_png);
@@ -66,6 +68,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 		addExternal("assets/images/crate.png", "image", "assets/images/crate.png");
 		addExternal("assets/images/ice_block.png", "image", "assets/images/ice_block.png");
 		addExternal("assets/images/stick.png", "image", "assets/images/stick.png");
+		addExternal("assets/images/stick_small.png", "image", "assets/images/stick_small.png");
 		addExternal("assets/images/tile.png", "image", "assets/images/tile.png");
 		addExternal("assets/images/tiles.png", "image", "assets/images/tiles.png");
 		addExternal("assets/images/turret.png", "image", "assets/images/turret.png");
@@ -92,6 +95,9 @@ class DefaultAssetLibrary extends AssetLibrary {
 		
 		className.set ("assets/images/stick.png", __ASSET__assets_images_stick_png);
 		type.set ("assets/images/stick.png", Reflect.field (AssetType, "image".toUpperCase ()));
+		
+		className.set ("assets/images/stick_small.png", __ASSET__assets_images_stick_small_png);
+		type.set ("assets/images/stick_small.png", Reflect.field (AssetType, "image".toUpperCase ()));
 		
 		className.set ("assets/images/tile.png", __ASSET__assets_images_tile_png);
 		type.set ("assets/images/tile.png", Reflect.field (AssetType, "image".toUpperCase ()));
@@ -700,6 +706,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 @:keep class __ASSET__assets_images_crate_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_images_ice_block_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_images_stick_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
+@:keep class __ASSET__assets_images_stick_small_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_images_tile_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_images_tiles_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
 @:keep class __ASSET__assets_images_turret_png extends flash.display.BitmapData { public function new () { super (0, 0, true, 0); } }
@@ -724,6 +731,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 
 
 
+
 #elseif (windows || mac || linux)
 
 
@@ -731,6 +739,7 @@ class DefaultAssetLibrary extends AssetLibrary {
 @:bitmap("assets/images/crate.png") class __ASSET__assets_images_crate_png extends flash.display.BitmapData {}
 @:bitmap("assets/images/ice_block.png") class __ASSET__assets_images_ice_block_png extends flash.display.BitmapData {}
 @:bitmap("assets/images/stick.png") class __ASSET__assets_images_stick_png extends flash.display.BitmapData {}
+@:bitmap("assets/images/stick_small.png") class __ASSET__assets_images_stick_small_png extends flash.display.BitmapData {}
 @:bitmap("assets/images/tile.png") class __ASSET__assets_images_tile_png extends flash.display.BitmapData {}
 @:bitmap("assets/images/tiles.png") class __ASSET__assets_images_tiles_png extends flash.display.BitmapData {}
 @:bitmap("assets/images/turret.png") class __ASSET__assets_images_turret_png extends flash.display.BitmapData {}

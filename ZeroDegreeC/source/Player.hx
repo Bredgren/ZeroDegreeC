@@ -12,6 +12,7 @@ import haxe.EnumFlags;
 
 private enum BodyState {
   STAND;
+  CROUCH;
   WALK;
   JUMP;
   FALL;
@@ -55,27 +56,29 @@ class Player extends FlxSpriteGroup {
     _body = new FlxSprite(X, Y);
     _body.acceleration.y = _init_gravity;
     _body.drag.x = _init_drag;
-    _body.loadGraphic("assets/images/stick.png", true, 64, 128);
+    _body.loadGraphic("assets/images/stick_small.png", true, 32, 64);
     _body.animation.add("stand", [0], 0);
+    _body.animation.add("crouch", [1], 0);
     _body.animation.add("walk", [2, 3], 5);
     _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
-    _body.width = 32;
-    _body.height = 125;
+    _body.width = 16;
+    _body.height = 60;
     _body.centerOffsets();
     //_body.allowCollisions = FlxObject.LEFT | FlxObject.RIGHT;
     add(_body);
     //FlxG.log.add("add player body");
 
     _arms = new FlxSprite(X, Y);
-    _arms.loadGraphic("assets/images/stick.png", true, 64, 128);
+    _arms.loadGraphic("assets/images/stick_small.png", true, 32, 64);
     _arms.animation.add("stand", [6, 7], 2);
+    _arms.animation.add("crouch", [11], 0);
     _arms.animation.add("walk", [8, 9], 5);
     _arms.animation.add("jump", [6], 0);
     _arms.animation.add("point", [10], 0);
     _arms.animation.play("stand");
-    _arms.width = 32;
-    _arms.height = 125;
+    _arms.width = 16;
+    _arms.height = 60;
     _arms.centerOffsets();
     _arms.allowCollisions = FlxObject.NONE;
     add(_arms);
@@ -120,14 +123,26 @@ class Player extends FlxSpriteGroup {
           _switchBodyState(BodyState.JUMP);
         } else if (FlxG.keys.anyPressed(["LEFT", "A", "RIGHT", "D"])) {
           _switchBodyState(BodyState.WALK);
+        } else if (FlxG.keys.anyPressed(["DOWN", "S"])) {
+          _switchBodyState(BodyState.CROUCH);
         } else if (!_is_on_ground) {
           _switchBodyState(BodyState.FALL);
+        }
+      case BodyState.CROUCH:
+        if (FlxG.keys.anyPressed(["UP", "W"])) {
+          _switchBodyState(BodyState.JUMP);
+        } else if (FlxG.keys.anyPressed(["LEFT", "A", "RIGHT", "D"])) {
+          _switchBodyState(BodyState.WALK);
+        } else if (FlxG.keys.anyJustReleased(["DOWN", "S"])) {
+          _switchBodyState(BodyState.STAND);
         }
       case BodyState.WALK:
         if (FlxG.keys.anyPressed(["LEFT", "A"])) {
           _moveLeft();
         } else if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
           _moveRight();
+        } else if (FlxG.keys.anyPressed(["DOWN", "S"])) {
+          _switchBodyState(BodyState.CROUCH);
         }
         if (!FlxG.keys.anyPressed(["LEFT", "A", "RIGHT", "D"])) {
           _switchBodyState(BodyState.STAND);
@@ -264,6 +279,8 @@ class Player extends FlxSpriteGroup {
     switch (new_state) {
       case BodyState.STAND:
         _body.animation.play("stand");
+      case BodyState.CROUCH:
+        _body.animation.play("crouch");
       case BodyState.WALK:
         _body.animation.play("walk");
       case BodyState.JUMP:
@@ -280,6 +297,8 @@ class Player extends FlxSpriteGroup {
     switch (_body_state) {
       case BodyState.STAND:
         _arms.animation.play("stand");
+      case BodyState.CROUCH:
+        _arms.animation.play("crouch");
       case BodyState.WALK:
         _arms.animation.play("walk");
       case BodyState.JUMP:
