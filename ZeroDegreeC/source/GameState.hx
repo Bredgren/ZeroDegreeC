@@ -93,7 +93,16 @@ class GameState extends FlxState {
     _freeze_power.text = "Freeze Power: " + _player.getFreezePower();
 
     var player_collide = false;
+
     if (FlxG.collide(_crates, _player, _player.touchCrate)) {
+      player_collide = true;
+    }
+
+    if (FlxG.collide(_turrets, _player)) {
+      player_collide = true;
+    }
+
+    if (FlxG.collide(_ice_blocks, _player)) {
       player_collide = true;
     }
 

@@ -248,6 +248,14 @@ class Player extends FlxSpriteGroup {
             _freeze_power++;
           }
         }
+      } else {
+        //if (FlxG.mouse.justPressed) {
+          //var ice_blocks = _state.getIceBlocks();
+          //var ice = ice_blocks.recycle(IceBlock);
+          //ice.setPosition(end_point.x, end_point.y);
+          //ice.freeze();
+          //_freeze_power--;
+        //}
       }
     } else {
       _arms.set_angle(0);

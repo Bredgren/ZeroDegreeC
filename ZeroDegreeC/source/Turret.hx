@@ -126,11 +126,13 @@ class Turret extends Freezable {
   override public function onZero():Void {
     FlxG.log.add("turret zero");
     _speed = _original_speed;
+    this.allowCollisions = FlxObject.NONE;
   }
 
   override public function onOneFromZero():Void {
     FlxG.log.add("turret one from zero");
     _speed = _original_speed / 2;
+    this.allowCollisions = FlxObject.ANY;
   }
 
   override public function onOneFromTwo():Void {

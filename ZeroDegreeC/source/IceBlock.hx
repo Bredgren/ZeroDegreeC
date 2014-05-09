@@ -1,6 +1,7 @@
 package ;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 
 /**
@@ -21,7 +22,14 @@ class IceBlock extends Freezable {
 
   override public function update():Void {
     super.update();
-    this.setPosition(this._object.x + this._object.width / 2, this._object.y + this._object.height / 2);
+    if (this._object != null) {
+      this.setPosition(this._object.x + this._object.width / 2, this._object.y + this._object.height / 2);
+      this.allowCollisions = FlxObject.NONE;
+      this.immovable = false;
+    } else {
+      this.allowCollisions = FlxObject.ANY;
+      this.immovable = true;
+    }
   }
 
   override public function reset(X:Float, Y:Float):Void {
