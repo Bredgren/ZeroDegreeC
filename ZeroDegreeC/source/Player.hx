@@ -23,6 +23,11 @@ private enum BodyState {
  * @author Brandon
  */
 class Player extends FlxSpriteGroup {
+  private var SPRITE_WIDTH:Int = 32;
+  private var SPRITE_HEIGHT:Int = 64;
+  private var HIT_WIDTH:Int = 16;
+  private var HIT_HEIGHT:Int = 60;
+
   private var _health:Float = 0;
   private var _dmg_speed:Float = 0.05;
   private var _rev_speed:Float = 0.002;
@@ -56,29 +61,29 @@ class Player extends FlxSpriteGroup {
     _body = new FlxSprite(X, Y);
     _body.acceleration.y = _init_gravity;
     _body.drag.x = _init_drag;
-    _body.loadGraphic("assets/images/stick_small.png", true, 32, 64);
+    _body.loadGraphic("assets/images/stick_small.png", true, SPRITE_WIDTH, SPRITE_HEIGHT);
     _body.animation.add("stand", [0], 0);
     _body.animation.add("crouch", [1], 0);
     _body.animation.add("walk", [2, 3], 5);
     _body.animation.add("jump", [4], 0);
     _body.animation.play("stand");
-    _body.width = 16;
-    _body.height = 60;
+    _body.width = HIT_WIDTH;
+    _body.height = HIT_HEIGHT;
     _body.centerOffsets();
     //_body.allowCollisions = FlxObject.LEFT | FlxObject.RIGHT;
     add(_body);
     //FlxG.log.add("add player body");
 
     _arms = new FlxSprite(X, Y);
-    _arms.loadGraphic("assets/images/stick_small.png", true, 32, 64);
+    _arms.loadGraphic("assets/images/stick_small.png", true, SPRITE_WIDTH, SPRITE_HEIGHT);
     _arms.animation.add("stand", [6, 7], 2);
     _arms.animation.add("crouch", [11], 0);
     _arms.animation.add("walk", [8, 9], 5);
     _arms.animation.add("jump", [6], 0);
     _arms.animation.add("point", [10], 0);
     _arms.animation.play("stand");
-    _arms.width = 16;
-    _arms.height = 60;
+    _arms.width = HIT_WIDTH;
+    _arms.height = HIT_HEIGHT;
     _arms.centerOffsets();
     _arms.allowCollisions = FlxObject.NONE;
     add(_arms);
@@ -254,9 +259,9 @@ class Player extends FlxSpriteGroup {
     _arms.setPosition(_body.x, _body.y);
 
     if (_grabbed_crate != null) {
-      var offset_x = -_body.width / 2 + _grabbed_crate.width;
+      var offset_x = _body.width / 2;
       if (_arms.flipX) {
-        offset_x = -offset_x;
+        offset_x = _body.width / 2 -_grabbed_crate.width;
       }
       _grabbed_crate.x = _body.x + offset_x;
       _grabbed_crate.y = _body.y + _body.height / 3;
@@ -276,10 +281,26 @@ class Player extends FlxSpriteGroup {
   }
 
   private function _switchBodyState(new_state:BodyState) {
+    switch (_body_state) {
+      case BodyState.STAND:
+      case BodyState.CROUCH:
+        _body.width = HIT_WIDTH;
+        _body.height = HIT_HEIGHT;
+        _body.y -= _body.height / 2;
+        _body.centerOffsets();
+      case BodyState.WALK:
+      case BodyState.JUMP:
+      case BodyState.FALL:
+    }
+
     switch (new_state) {
       case BodyState.STAND:
         _body.animation.play("stand");
       case BodyState.CROUCH:
+        if (_grabbed_crate != null) return;
+        _body.height = HIT_HEIGHT / 2;
+        _body.y += _body.height;
+        _body.offset.y += _body.height;
         _body.animation.play("crouch");
       case BodyState.WALK:
         _body.animation.play("walk");
@@ -289,6 +310,7 @@ class Player extends FlxSpriteGroup {
       case BodyState.FALL:
         _body.animation.play("jump");
     }
+
     _body_state = new_state;
     _setArmsAnimation();
   }
