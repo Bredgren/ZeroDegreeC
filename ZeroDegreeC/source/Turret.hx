@@ -21,24 +21,21 @@ enum TurretState {
  * @author Brandon
  */
 class Turret extends Freezable {
-  private var _state:TurretState = PATROL;
+  private var _turret_state:TurretState = PATROL;
   private var _min_angle:Float;
   private var _max_angle:Float;
   private var _range:Float;
   private var _original_speed:Float;
   private var _speed:Float;
   private var _dir:Int = 1;
-  private var _game_state:GameState;
   private var _sight_ray:Ray;
   private var _search_time:Int;
   private var _weapon:FlxWeapon;
 
-  public function new(X:Float = 0, Y:Float = 0, state:GameState,
+  public function new(state:GameState, x:Float = 0, y:Float = 0,
                       min_angle:Float = 0, max_angle:Float = 180, start_angle:Float = 90,
                       range:Float = 500, speed:Float = 1) {
-    super(X, Y);
-    _game_state = state;
-		this.loadGraphic("assets/images/turret.png");
+    super(state, x, y, "assets/images/turret.png");
     this.immovable = true;
 
     _min_angle = min_angle;
@@ -53,21 +50,21 @@ class Turret extends Freezable {
 
     _sight_ray = new Ray(0x55FF0000);
     _sight_ray.setThickness(2);
-    _game_state.add(_sight_ray);
+    _state.add(_sight_ray);
 
     _weapon = new FlxWeapon("turret gun", this);
     _weapon.makePixelBullet(100, 10, 10, 0xFFA8A800, Std.int(this.width / 2), Std.int(this.height / 2));
     _weapon.bounds.top = 0;
     _weapon.bounds.left = 0;
-    _weapon.bounds.right = _game_state.levelWidth();
-    _weapon.bounds.bottom = _game_state.levelHeight();
+    _weapon.bounds.right = _state.levelWidth();
+    _weapon.bounds.bottom = _state.levelHeight();
     _weapon.setBulletSpeed(2500);
     _weapon.setBulletRandomFactor(5);
     _weapon.setFireRate(50);
     _weapon.onFireCallback = function():Void {
       FlxG.camera.shake(0.005, 0.05);
     };
-    _game_state.add(_weapon.group);
+    _state.add(_weapon.group);
   }
 
   public function weapon():FlxWeapon {
@@ -75,16 +72,16 @@ class Turret extends Freezable {
   }
 
   override public function update():Void {
-    switch (_state) {
+    switch (_turret_state) {
       case PATROL:
         _updateAngle();
         var contact:FlxPoint = new FlxPoint();
         var player = _fireSightRay(contact);
         if (player != null) {
-          _state = LOCKING_ON;
+          _turret_state = LOCKING_ON;
         }
       case LOCKING_ON:
-        _state = LOCKED_ON;
+        _turret_state = LOCKED_ON;
       case LOCKED_ON:
         //FlxG.log.add("locked on");
         _weapon.fireFromParentAngle();
@@ -99,14 +96,14 @@ class Turret extends Freezable {
         //}
        // _updateAngle();
         if (player == null) {
-          _state = LOST_SIGHT;
+          _turret_state = LOST_SIGHT;
           _search_time = 120;
         }
       case LOST_SIGHT:
         //FlxG.log.add("lost sight");
         _search_time--;
         if (_search_time <= 0) {
-          _state = PATROL;
+          _turret_state = PATROL;
         } else {
           if (_search_time % 50 == 0) {
             _dir = -_dir;
@@ -115,7 +112,7 @@ class Turret extends Freezable {
           var contact:FlxPoint = new FlxPoint();
           var player = _fireSightRay(contact);
           if (player != null) {
-            _state = LOCKING_ON;
+            _turret_state = LOCKING_ON;
           }
         }
     }
@@ -170,7 +167,7 @@ class Turret extends Freezable {
     flags.set(RayCollision.PLAYER);
     flags.set(RayCollision.CRATES);
     flags.set(RayCollision.MAP);
-    var player = Std.instance(_game_state.fireRay(start_x, start_y, end_x, end_y, contact, flags), Player);
+    var player = Std.instance(_state.fireRay(start_x, start_y, end_x, end_y, contact, flags), Player);
     _sight_ray.fire(new FlxPoint(start_x, start_y), contact, 0.001);
 
     return player;

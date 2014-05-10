@@ -20,7 +20,7 @@ import haxe.EnumFlags;
 enum RayCollision {
   MAP;
   PLAYER;
-  ICE_BLOCKS;
+  //ICE_BLOCKS;
   CRATES;
   TURRETS;
 }
@@ -34,7 +34,7 @@ class GameState extends FlxState {
   //private var _map:FlxTilemap;
   private var _tileMap:FlxTilemap;
 
-  private var _ice_blocks:FlxTypedGroup<IceBlock>;
+  //private var _ice_blocks:FlxTypedGroup<IceBlock>;
   private var _player:Player;
   private var _crates:FlxTypedGroup<Crate>;
   private var _turrets:FlxTypedGroup<Turret>;
@@ -65,8 +65,8 @@ class GameState extends FlxState {
     _freeze_power.color = 0x0530FA;
     add(_freeze_power);
 
-    _ice_blocks = new FlxTypedGroup<IceBlock>();
-    add(_ice_blocks);
+    //_ice_blocks = new FlxTypedGroup<IceBlock>();
+    //add(_ice_blocks);
 
     _dmg_indicator = new FlxSprite();
     _dmg_indicator.makeGraphic(Std.int(FlxG.game.width), Std.int(FlxG.game.height), 0x99FF0000);
@@ -102,9 +102,9 @@ class GameState extends FlxState {
       player_collide = true;
     }
 
-    if (FlxG.collide(_ice_blocks, _player)) {
-      player_collide = true;
-    }
+    //if (FlxG.collide(_ice_blocks, _player)) {
+      //player_collide = true;
+    //}
 
     FlxG.collide(_crates, _crates);
     FlxG.collide(_tileMap, _crates);
@@ -134,9 +134,9 @@ class GameState extends FlxState {
     }
   }
 
-  public function getIceBlocks():FlxTypedGroup<IceBlock> {
-    return _ice_blocks;
-  }
+  //public function getIceBlocks():FlxTypedGroup<IceBlock> {
+    //return _ice_blocks;
+  //}
 
    private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
@@ -150,7 +150,7 @@ class GameState extends FlxState {
 
   private function _spawnCrate(x:Float, y:Float) {
     FlxG.log.add("spawn crate " + x + " " + y);
-    var crate = new Crate(0, 0);
+    var crate = new Crate(this, x, y);
     crate.x = x - crate.width / 2;
     crate.y = y - crate.height;
     _crates.add(crate);
@@ -158,7 +158,7 @@ class GameState extends FlxState {
 
   private function _spawnTurret(x:Float, y:Float) {
     FlxG.log.add("spawn turret " + x + " " + y);
-    var turret = new Turret(x, y, this);
+    var turret = new Turret(this, x, y);
     turret.x = x - turret.width / 2;
     turret.y = y - turret.height / 2;
     _turrets.add(turret);
@@ -196,10 +196,10 @@ class GameState extends FlxState {
         hit_object = getPlayerAt(p);
         if (hit_object != null) break;
       }
-      if (collide_with.has(RayCollision.ICE_BLOCKS)) {
-        hit_object = getIceBlockAt(p);
-        if (hit_object != null) break;
-      }
+      //if (collide_with.has(RayCollision.ICE_BLOCKS)) {
+        //hit_object = getIceBlockAt(p);
+        //if (hit_object != null) break;
+      //}
       if (collide_with.has(RayCollision.CRATES)) {
         hit_object = getCrateAt(p);
         if (hit_object != null) break;
@@ -245,9 +245,9 @@ class GameState extends FlxState {
     return null;
   }
 
-  public function getIceBlockAt(point:FlxPoint):IceBlock {
-    return cast(_getObjectAt(point, _ice_blocks), IceBlock);
-  }
+  //public function getIceBlockAt(point:FlxPoint):IceBlock {
+    //return cast(_getObjectAt(point, _ice_blocks), IceBlock);
+  //}
 
   public function getCrateAt(point:FlxPoint):Crate {
     return cast(_getObjectAt(point, _crates), Crate);
@@ -276,7 +276,7 @@ class GameState extends FlxState {
     _player.destroy();
     _turrets.destroy();
     _crates.destroy();
-    _ice_blocks.destroy();
+    //_ice_blocks.destroy();
     _freeze_power.destroy();
     _dmg_indicator.destroy();
 		super.destroy();

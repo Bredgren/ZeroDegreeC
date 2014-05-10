@@ -13,10 +13,9 @@ class Crate extends Freezable {
   private var _init_gravity:Int = 500;
   private var _grabbed:Bool = false;
 
-  public function new(X:Float = 0, Y:Float = 0) {
-    super(X, Y);
+  public function new(state:GameState, x:Float = 0, y:Float = 0) {
+    super(state, x, y, "assets/images/crate.png");
 
-    this.loadGraphic("assets/images/crate.png");
     this.acceleration.y = _init_gravity;
     this.drag.set(200, 200);
     this.elasticity = 0.2;
