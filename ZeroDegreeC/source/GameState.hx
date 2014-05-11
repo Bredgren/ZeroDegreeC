@@ -156,9 +156,10 @@ class GameState extends FlxState {
     _crates.add(crate);
   }
 
-  private function _spawnTurret(x:Float, y:Float) {
+  private function _spawnTurret(x:Float, y:Float, min_angle:Float = 0, max_angle:Float = 180,
+                                start_angle:Float = 90, range:Float = 500, speed:Float = 1) {
     FlxG.log.add("spawn turret " + x + " " + y);
-    var turret = new Turret(this, x, y);
+    var turret = new Turret(this, x, y, min_angle, max_angle, start_angle, range, speed);
     turret.x = x - turret.width / 2;
     turret.y = y - turret.height / 2;
     _turrets.add(turret);
@@ -174,7 +175,12 @@ class GameState extends FlxState {
       case "Crate":
         _spawnCrate(x, y);
       case "Turret":
-        _spawnTurret(x, y);
+        var min_angle = Std.parseFloat(params.get("min_angle"));
+        var max_angle = Std.parseFloat(params.get("max_angle"));
+        var start_angle = Std.parseFloat(params.get("start_angle"));
+        var range = Std.parseFloat(params.get("range"));
+        var speed = Std.parseFloat(params.get("speed"));
+        _spawnTurret(x, y, min_angle, max_angle, start_angle, range, speed);
     }
   }
 

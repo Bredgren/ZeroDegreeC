@@ -41,7 +41,7 @@
     <Crate id="3" x="464" y="960" />
     <Crate id="4" x="448" y="928" />
     <Player id="0" x="112" y="960" />
-    <Turret id="6" x="656" y="784" />
-    <Turret id="7" x="1456" y="656" />
+    <Turret id="6" x="656" y="784" min_angle="0" max_angle="180" start_angle="90" range="500" speed="1" />
+    <Turret id="7" x="1280" y="656" min_angle="240" max_angle="300" start_angle="270" range="400" speed="2" />
   </objects>
 </level>

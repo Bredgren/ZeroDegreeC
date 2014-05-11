@@ -104,7 +104,13 @@
       <ImageDefinition DrawMode="Image" ImagePath="..\ZeroDegreeC\assets\images\turret.png" Tiled="false">
         <RectColor A="255" R="255" G="0" B="0" />
       </ImageDefinition>
-      <ValueDefinitions />
+      <ValueDefinitions>
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="min_angle" Default="0" Min="0" Max="360" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="max_angle" Default="180" Min="0" Max="360" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="start_angle" Default="90" Min="0" Max="360" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="range" Default="500" Min="50" Max="5000" Round="0.1" />
+        <ValueDefinition xsi:type="FloatValueDefinition" Name="speed" Default="1" Min="0" Max="100" Round="0.1" />
+      </ValueDefinitions>
       <NodesDefinition Enabled="false" Limit="-1" DrawMode="None" Ghost="false" />
     </EntityDefinition>
   </EntityDefinitions>
