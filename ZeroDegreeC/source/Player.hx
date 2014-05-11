@@ -31,11 +31,15 @@ class Player extends FlxSpriteGroup {
   private var _health:Float = 0;
   private var _dmg_speed:Float = 0.05;
   private var _rev_speed:Float = 0.002;
-  private var _init_gravity:Int = 500;
-  private var _init_drag:Int = 400;
-  private var _max_vel:Int = 200;
-  private var _jump_str:Int = 400;
+  private var _init_gravity:Int = 600;
+  private var _init_drag:Int = 2000;
+  private var _max_vel:Int = 300;
+  private var _accel:Int = 1000;
+  private var _jump_str:Int = 250;
+  private var _jump_boost:Float = 0.020;
   private var _freeze_power:Int = 0;
+
+  private var _jumping:Bool = false;
 
   private var _body:FlxSprite;
   private var _arms:FlxSprite;
@@ -122,6 +126,7 @@ class Player extends FlxSpriteGroup {
 
   override public function update() {
     _health = Math.max(0, _health - _rev_speed);
+    _body.acceleration.x = 0;
     switch (_body_state) {
       case BodyState.STAND:
         if (FlxG.keys.anyPressed(["UP", "W"])) {
@@ -161,6 +166,15 @@ class Player extends FlxSpriteGroup {
           _moveLeft();
         } else if (FlxG.keys.anyPressed(["RIGHT", "D"])) {
           _moveRight();
+        }
+        if (FlxG.keys.anyPressed(["UP", "W"]) && _jumping) {
+          _body.velocity.y -= _jump_str * _jump_boost;
+          //if (_body.velocity.y < -_jump_str) {
+            //_body.velocity.y = -_jump_str;
+            //_jumping = false;
+          //}
+        } else if (FlxG.keys.anyJustReleased(["UP", "W"]) && _jumping) {
+          _jumping = false;
         }
         if (_body.velocity.y > 0) {
           _switchBodyState(BodyState.FALL);
@@ -264,6 +278,12 @@ class Player extends FlxSpriteGroup {
 
     super.update();
 
+    if (_body.velocity.x > _max_vel) {
+      _body.velocity.x = _max_vel;
+    } else if (_body.velocity.x < -_max_vel) {
+      _body.velocity.x = -_max_vel;
+    }
+
     _arms.setPosition(_body.x, _body.y);
 
     if (_grabbed_crate != null) {
@@ -276,14 +296,18 @@ class Player extends FlxSpriteGroup {
     }
   }
 
-  private function _moveLeft() {
-    _body.velocity.x = -_max_vel;
+  private function _moveLeft(ratio:Float = 1.0) {
+    //_body.velocity.x = -_max_vel;
+    _body.acceleration.x = -_accel * ratio;
+    if (_body.velocity.x > 0) _body.velocity.x = 0;
     _body.flipX = true;
     _arms.flipX = true;
   }
 
-  private function _moveRight() {
-    _body.velocity.x = _max_vel;
+  private function _moveRight(ratio:Float = 1.0) {
+    //_body.velocity.x = _max_vel;
+    _body.acceleration.x = _accel * ratio;
+    if (_body.velocity.x < 0) _body.velocity.x = 0;
     _body.flipX = false;
     _arms.flipX = false;
   }
@@ -314,6 +338,9 @@ class Player extends FlxSpriteGroup {
         _body.animation.play("walk");
       case BodyState.JUMP:
         _body.velocity.y = -_jump_str;
+        //_body.velocity.y -= _jump_accel;
+        //_body.acceleration.y = -_jump_accel;
+        _jumping = true;
         _body.animation.play("jump");
       case BodyState.FALL:
         _body.animation.play("jump");
