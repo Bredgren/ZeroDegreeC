@@ -20,6 +20,7 @@ import haxe.EnumFlags;
 enum RayCollision {
   MAP;
   PLAYER;
+  VENTS;
   //ICE_BLOCKS;
   CRATES;
   TURRETS;
@@ -31,13 +32,13 @@ enum RayCollision {
  */
 class GameState extends FlxState {
   private var _loader:FlxOgmoLoader;
-  //private var _map:FlxTilemap;
   private var _tileMap:FlxTilemap;
 
   //private var _ice_blocks:FlxTypedGroup<IceBlock>;
   private var _player:Player;
   private var _crates:FlxTypedGroup<Crate>;
   private var _turrets:FlxTypedGroup<Turret>;
+  private var _vents:FlxTypedGroup<Vent>;
 
   private var _max_freeze_power:Int;
   private var _freeze_power:FlxText;
@@ -55,9 +56,12 @@ class GameState extends FlxState {
 
     _crates = new FlxTypedGroup<Crate>();
     _turrets = new FlxTypedGroup<Turret>();
+    _vents = new FlxTypedGroup<Vent>();
+    add(_vents);
     _loader.loadEntities(_loadEntity, "objects");
     add(_turrets);
     add(_crates);
+
 
     _freeze_power = new FlxText(10, 20, 200, "Freeze Power: ??");
     _freeze_power.setPosition(10, 10);
@@ -99,6 +103,10 @@ class GameState extends FlxState {
     }
 
     if (FlxG.collide(_turrets, _player)) {
+      player_collide = true;
+    }
+
+    if (FlxG.collide(_vents, _player)) {
       player_collide = true;
     }
 
@@ -165,6 +173,15 @@ class GameState extends FlxState {
     _turrets.add(turret);
   }
 
+  private function _spawnVent(x:Float, y:Float) {
+    FlxG.log.add("spawn vent " + x + " " + y);
+    var vent = new Vent(this, x, y);
+    vent.x = x - vent.width / 2;
+    vent.y = y - vent.height / 2;
+    _vents.add(vent);
+  }
+
+
   private function _loadEntity(entity:String, params:Xml):Void {
     FlxG.log.add(entity + ": " + params);
     var x = Std.parseFloat(params.get("x"));
@@ -181,6 +198,8 @@ class GameState extends FlxState {
         var range = Std.parseFloat(params.get("range"));
         var speed = Std.parseFloat(params.get("speed"));
         _spawnTurret(x, y, min_angle, max_angle, start_angle, range, speed);
+      case "Vent":
+        _spawnVent(x, y);
     }
   }
 
@@ -200,6 +219,10 @@ class GameState extends FlxState {
       var p = new FlxPoint(new_x, new_y);
       if (collide_with.has(RayCollision.PLAYER)) {
         hit_object = getPlayerAt(p);
+        if (hit_object != null) break;
+      }
+      if (collide_with.has(RayCollision.VENTS)) {
+        hit_object = getVentAt(p);
         if (hit_object != null) break;
       }
       //if (collide_with.has(RayCollision.ICE_BLOCKS)) {
@@ -249,6 +272,10 @@ class GameState extends FlxState {
       return _player;
     }
     return null;
+  }
+
+  public function getVentAt(point:FlxPoint):Vent {
+    return cast(_getObjectAt(point, _vents), Vent);
   }
 
   //public function getIceBlockAt(point:FlxPoint):IceBlock {

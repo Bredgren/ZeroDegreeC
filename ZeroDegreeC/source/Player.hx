@@ -169,14 +169,11 @@ class Player extends FlxSpriteGroup {
         }
         if (FlxG.keys.anyPressed(["UP", "W"]) && _jumping) {
           _body.velocity.y -= _jump_str * _jump_boost;
-          //if (_body.velocity.y < -_jump_str) {
-            //_body.velocity.y = -_jump_str;
-            //_jumping = false;
-          //}
+          FlxG.log.add(_body.velocity.y);
         } else if (FlxG.keys.anyJustReleased(["UP", "W"]) && _jumping) {
           _jumping = false;
         }
-        if (_body.velocity.y > 0) {
+        if (_body.velocity.y > -10) {
           _switchBodyState(BodyState.FALL);
         }
         if (_is_on_ground) {
@@ -241,19 +238,13 @@ class Player extends FlxSpriteGroup {
       var flags = new EnumFlags<RayCollision>();
       flags.set(RayCollision.CRATES);
       flags.set(RayCollision.TURRETS);
+      flags.set(RayCollision.VENTS);
       //flags.set(RayCollision.ICE_BLOCKS);
       flags.set(RayCollision.MAP);
       var obj = cast(_state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point, flags), Freezable);
       _ray.fire(new FlxPoint(body_x, body_y), end_point, 0.08);
       if (obj != null) {
-        //var ice_blocks = _state.getIceBlocks();
         if (FlxG.mouse.justPressed) {
-          //if (obj.freezeLevel() == FreezeLevel.ZERO ) {
-            //var ice = ice_blocks.recycle(IceBlock);
-            //ice.setPosition(obj.x + obj.width / 2, obj.y + obj.height / 2);
-            //ice.setObject(obj);
-            //obj = ice;
-          //}
           if (obj.freeze()) {
             _freeze_power--;
           }
@@ -262,14 +253,6 @@ class Player extends FlxSpriteGroup {
             _freeze_power++;
           }
         }
-      } else {
-        //if (FlxG.mouse.justPressed) {
-          //var ice_blocks = _state.getIceBlocks();
-          //var ice = ice_blocks.recycle(IceBlock);
-          //ice.setPosition(end_point.x, end_point.y);
-          //ice.freeze();
-          //_freeze_power--;
-        //}
       }
     } else {
       _arms.set_angle(0);
