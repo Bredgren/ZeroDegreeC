@@ -16,6 +16,7 @@ import flixel.util.FlxCollision;
 import flixel.util.FlxPoint;
 import flixel.util.FlxSpriteUtil;
 import haxe.EnumFlags;
+import Freezable;
 
 enum RayCollision {
   MAP;
@@ -96,6 +97,11 @@ class GameState extends FlxState {
 
     _freeze_power.text = "Freeze Power: " + _player.getFreezePower();
 
+    if (_getAvailableFreezePower() < _max_freeze_power) {
+      var v = _nearestUnfrozenVent();
+      if (v != null) v.freeze();
+    }
+
     var player_collide = false;
 
     if (FlxG.collide(_crates, _player, _player.touchCrate)) {
@@ -148,7 +154,7 @@ class GameState extends FlxState {
 
    private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
-    _player = new Player(0, 0, _max_freeze_power, this);
+    _player = new Player(0, 0, _max_freeze_power-1, this);
     _player.x = x - _player.width / 2;
     _player.y = y - _player.height;
     add(_player);
@@ -314,4 +320,41 @@ class GameState extends FlxState {
     _dmg_indicator.destroy();
 		super.destroy();
 	}
+
+  private function _getFreezeCount<T:Freezable>(group:FlxTypedGroup<T>):Int {
+    var count = 0;
+    for (o in group) {
+      if (o.freezeLevel() == FreezeLevel.ONE) count += 1;
+      else if (o.freezeLevel() == FreezeLevel.TWO) count += 2;
+    }
+    return count;
+  }
+
+  private function _getAvailableFreezePower():Int {
+    var amount = 0;
+    amount += _player.getFreezePower();
+    amount += _getFreezeCount(_vents);
+    amount += _getFreezeCount(_crates);
+    amount += _getFreezeCount(_turrets);
+    return amount;
+  }
+
+  private function _nearestUnfrozenVent():Vent {
+    var p_x = _player.getBody().x;
+    var p_y = _player.getBody().y;
+    var nearest:Vent = null;
+    var min_dist:Float = -1;
+    for (vent in _vents) {
+      if (vent.freezeLevel() == FreezeLevel.TWO) continue;
+      var dx = p_x - vent.x;
+      var dy = p_y - vent.y;
+      var dist = dx * dx + dy * dy;
+      if (min_dist < 0 || dist < min_dist) {
+        min_dist = dist;
+        nearest = vent;
+      }
+    }
+
+    return nearest;
+  }
 }
