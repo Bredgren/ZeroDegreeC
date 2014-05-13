@@ -12,6 +12,9 @@ class Vent extends Freezable {
     super(state, x, y, "assets/images/vent.png");
     this.allowCollisions = FlxObject.NONE;
     this.immovable = true;
+    this.width = this._ice_block.width;
+    this.height = this._ice_block.height;
+    this.centerOffsets();
   }
 
   override public function onZero():Void {

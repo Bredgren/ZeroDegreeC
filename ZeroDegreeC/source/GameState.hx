@@ -107,6 +107,9 @@ class GameState extends FlxState {
     if (FlxG.collide(_crates, _player, _player.touchCrate)) {
       player_collide = true;
     }
+    if (!player_collide) {
+      FlxG.overlap(_crates, _player, _player.touchCrate);
+    }
 
     if (FlxG.collide(_turrets, _player)) {
       player_collide = true;

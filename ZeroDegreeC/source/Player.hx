@@ -169,7 +169,6 @@ class Player extends FlxSpriteGroup {
         }
         if (FlxG.keys.anyPressed(["UP", "W"]) && _jumping) {
           _body.velocity.y -= _jump_str * _jump_boost;
-          FlxG.log.add(_body.velocity.y);
         } else if (FlxG.keys.anyJustReleased(["UP", "W"]) && _jumping) {
           _jumping = false;
         }
@@ -356,11 +355,11 @@ class Player extends FlxSpriteGroup {
   public function setIsOnGround(value:Bool) { _is_on_ground = value; }
 
   public function touchCrate(crate:Crate, player:FlxObject) {
-    //FlxG.log.add(_body.touching);
+    FlxG.log.add("touch " + _body.overlaps(crate) );
     if (_grabbed_crate != null) return;
-    if (_is_grabbing &&
+    if (_is_grabbing && (_body.overlaps(crate) ||
         ((_body.isTouching(FlxObject.LEFT) && _arms.flipX) ||
-        (_body.isTouching(FlxObject.RIGHT) && !_arms.flipX))) {
+        (_body.isTouching(FlxObject.RIGHT) && !_arms.flipX)))) {
         if (crate.grab()) {
           _grabbed_crate = crate;
         }
