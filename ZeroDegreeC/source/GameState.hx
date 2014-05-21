@@ -25,6 +25,14 @@ enum RayCollision {
   //ICE_BLOCKS;
   CRATES;
   TURRETS;
+  PLATFORMS;
+}
+
+typedef PlatformParams = {
+  var x:Float;
+  var y:Float;
+  var speed:Float;
+  var is_start:Bool;
 }
 
 /**
@@ -40,11 +48,14 @@ class GameState extends FlxState {
   private var _crates:FlxTypedGroup<Crate>;
   private var _turrets:FlxTypedGroup<Turret>;
   private var _vents:FlxTypedGroup<Vent>;
+  private var _platforms:FlxTypedGroup<MovingPlatform>;
 
   private var _max_freeze_power:Int;
   private var _freeze_power:FlxText;
 
   private var _dmg_indicator:FlxSprite;
+
+  private var _platform_params:Map<Int, PlatformParams>;
 
   public function new() {
     super();
@@ -58,11 +69,15 @@ class GameState extends FlxState {
     _crates = new FlxTypedGroup<Crate>();
     _turrets = new FlxTypedGroup<Turret>();
     _vents = new FlxTypedGroup<Vent>();
+    _platforms = new FlxTypedGroup<MovingPlatform>();
+
+    _platform_params = new Map<Int, PlatformParams>();
+
     add(_vents);
+    add(_platforms);
     _loader.loadEntities(_loadEntity, "objects");
     add(_turrets);
     add(_crates);
-
 
     _freeze_power = new FlxText(10, 20, 200, "Freeze Power: ??");
     _freeze_power.setPosition(10, 10);
@@ -93,6 +108,12 @@ class GameState extends FlxState {
   override public function update():Void {
     super.update();
 
+    if (FlxG.keys.justPressed.Q) {
+      for (p in _platforms) {
+        p.togglePower();
+      }
+    }
+
     _dmg_indicator.alpha = _player.getHealth();
 
     _freeze_power.text = "Freeze Power: " + _player.getFreezePower();
@@ -119,11 +140,16 @@ class GameState extends FlxState {
       player_collide = true;
     }
 
+    if (FlxG.collide(_platforms, _player)) {
+      player_collide = true;
+    }
+
     //if (FlxG.collide(_ice_blocks, _player)) {
       //player_collide = true;
     //}
 
     FlxG.collide(_crates, _crates);
+    FlxG.collide(_crates, _platforms);
     FlxG.collide(_tileMap, _crates);
 
     if (FlxG.collide(_tileMap, _player)) {
@@ -151,11 +177,11 @@ class GameState extends FlxState {
     }
   }
 
-  //public function getIceBlocks():FlxTypedGroup<IceBlock> {
+  //public function getIceBlocks():FlxTypedGroup<IceBl  ock> {
     //return _ice_blocks;
   //}
 
-   private function _spawnPlayer(x:Float, y:Float) {
+  private function _spawnPlayer(x:Float, y:Float) {
     FlxG.log.add("spawn player " + x + " " + y);
     _player = new Player(0, 0, _max_freeze_power-1, this);
     _player.x = x - _player.width / 2;
@@ -190,6 +216,35 @@ class GameState extends FlxState {
     _vents.add(vent);
   }
 
+  private function _spawnPlatform(id:Int, x:Float, y:Float, speed:Float, is_start:Bool) {
+    if (_platform_params.exists(id)) {
+      var other:PlatformParams = _platform_params.get(id);
+      var x1:Float, y1:Float, x2:Float, y2:Float, speed1:Float, speed2:Float;
+      if (is_start) {
+        x1 = x; y1 = y;
+        x2 = other.x; y2 = other.y;
+        speed1 = speed; speed2 = other.speed;
+      } else {
+        x1 = other.x; y1 = other.y;
+        x2 = x; y2 = y;
+        speed1 = other.speed;
+        speed2 = speed;
+      }
+      FlxG.log.add("spawn platform " + id + ": " + x1 + " " + y1 + " | " + speed);
+      var platform = new MovingPlatform(this, new FlxPoint(x1, y1), new FlxPoint(x2, y2), speed1, speed2);
+      _platforms.add(platform);
+      _platform_params.remove(id);
+    } else {
+      FlxG.log.add("store platform " + id + ": " + x + " " + y + " | " + speed);
+      var p:PlatformParams = {
+        x: x,
+        y: y,
+        speed: speed,
+        is_start: is_start,
+      }
+      _platform_params.set(id, p);
+    }
+  }
 
   private function _loadEntity(entity:String, params:Xml):Void {
     FlxG.log.add(entity + ": " + params);
@@ -209,6 +264,11 @@ class GameState extends FlxState {
         _spawnTurret(x, y, min_angle, max_angle, start_angle, range, speed);
       case "Vent":
         _spawnVent(x, y);
+      case "Platform":
+        var id = Std.parseInt(params.get("ID"));
+        var is_start = params.get("is_start") == "True";
+        var speed = Std.parseFloat(params.get("speed"));
+        _spawnPlatform(id, x, y, speed, is_start);
     }
   }
 

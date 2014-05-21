@@ -46,5 +46,11 @@
     <Vent id="10" x="144" y="816" />
     <Vent id="12" x="1072" y="800" />
     <Vent id="13" x="672" y="128" />
+    <Platform id="14" x="320" y="704" ID="0" is_start="True" speed="50" />
+    <Platform id="15" x="320" y="608" ID="0" is_start="False" speed="50" />
+    <Platform id="16" x="416" y="576" ID="1" is_start="False" speed="100" />
+    <Platform id="17" x="416" y="448" ID="1" is_start="False" speed="25" />
+    <Platform id="18" x="736" y="256" ID="2" is_start="True" speed="60" />
+    <Platform id="19" x="928" y="480" ID="2" is_start="False" speed="60" />
   </objects>
 </level>
