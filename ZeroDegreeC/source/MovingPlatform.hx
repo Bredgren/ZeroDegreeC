@@ -12,7 +12,7 @@ class MovingPlatform extends Freezable implements Powerable {
   var _pos2:FlxPoint;
   var _speed:Float;
   var _speed1:Float;
-  var _speed2:Float
+  var _speed2:Float;
   var _target:FlxPoint;
 
   public function new(state:GameState, pos1:FlxPoint, pos2:FlxPoint, speed1:Float, speed2:Float, start_pos1:Bool = true) {
@@ -36,20 +36,21 @@ class MovingPlatform extends Freezable implements Powerable {
     if (_target == _pos1) _target = _pos2;
     else _target = _pos1;
   }
-
   override public function update():Void {
     this.velocity.set(0, 0);
-    var dx_target = _target.x - this.x;
-    var dy_target = _target.y - this.y;
-    var dist_target = Math.sqrt(dx_target * dx_target + dy_target * dy_target);
+    if (freezeLevel() != FreezeLevel.TWO) {
+      var dx_target = _target.x - this.x;
+      var dy_target = _target.y - this.y;
+      var dist_target = Math.sqrt(dx_target * dx_target + dy_target * dy_target);
 
-    var speed = _speed;
-    if (freezeLevel() == FreezeLevel.ONE) speed = _speed / 2;
-    if (dist_target > 2) {
-      this.velocity.x = (dx_target / dist_target) * speed;
-      this.velocity.y = (dy_target / dist_target) * speed;
-    } else {
-      this.x = _target.x; this.y = _target.y;
+      var speed = _speed;
+      if (freezeLevel() == FreezeLevel.ONE) speed = _speed / 2;
+      if (dist_target > 2) {
+        this.velocity.x = (dx_target / dist_target) * speed;
+        this.velocity.y = (dy_target / dist_target) * speed;
+      } else {
+        this.x = _target.x; this.y = _target.y;
+      }
     }
 
     super.update();

@@ -306,6 +306,10 @@ class GameState extends FlxState {
         hit_object = getTurretAt(p);
         if (hit_object != null) break;
       }
+      if (collide_with.has(RayCollision.PLATFORMS)) {
+        hit_object = getPlatformAt(p);
+        if (hit_object != null) break;
+      }
       current_length += step;
     }
 
@@ -357,6 +361,10 @@ class GameState extends FlxState {
 
   public function getTurretAt(point:FlxPoint):Turret {
     return cast(_getObjectAt(point, _turrets), Turret);
+  }
+
+  public function getPlatformAt(point:FlxPoint):MovingPlatform {
+    return cast(_getObjectAt(point, _platforms), MovingPlatform);
   }
 
   public function onPlayerDeath() {

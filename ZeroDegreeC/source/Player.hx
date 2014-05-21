@@ -240,6 +240,7 @@ class Player extends FlxSpriteGroup {
       flags.set(RayCollision.VENTS);
       //flags.set(RayCollision.ICE_BLOCKS);
       flags.set(RayCollision.MAP);
+      flags.set(RayCollision.PLATFORMS);
       var obj = cast(_state.fireRay(body_x, body_y, mouse_x, mouse_y, end_point, flags), Freezable);
       _ray.fire(new FlxPoint(body_x, body_y), end_point, 0.08);
       if (obj != null) {
